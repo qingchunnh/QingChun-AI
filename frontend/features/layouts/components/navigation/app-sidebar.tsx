@@ -20,8 +20,8 @@ import {
 
 const data = {
   user: {
-    name: "DEEIX Chat",
-    email: "deeix.com",
+    name: "QingChun AI",
+    email: "qingchun.xyz",
     avatar: "",
   },
 }

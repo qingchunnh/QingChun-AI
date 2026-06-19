@@ -35,14 +35,14 @@ const jetBrainsMono = JetBrains_Mono({
 const webVitalsEnabled = process.env.NEXT_PUBLIC_WEB_VITALS_DEBUG === "true";
 
 export const metadata: Metadata = {
-  applicationName: "DEEIX Chat",
-  title: "DEEIX Chat",
-  description: "DEEIX Chat is a multi-model AI conversation system.",
+  applicationName: "QingChun AI",
+  title: "QingChun AI",
+  description: "QingChun AI is a multi-model AI conversation system.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "DEEIX Chat",
+    title: "QingChun AI",
   },
   formatDetection: {
     telephone: false,
