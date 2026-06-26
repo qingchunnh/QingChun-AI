@@ -1,12 +1,12 @@
 name: Docker Hub Image
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-    tags:
-      - "v*.*.*"
+  # push:
+    # branches:
+      # - main
+      # - dev
+    # tags:
+      # - "v*.*.*"
   workflow_dispatch:
 
 permissions:
