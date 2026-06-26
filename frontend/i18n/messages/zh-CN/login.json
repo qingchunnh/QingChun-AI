@@ -34,6 +34,11 @@
   "providerLogin": "使用 {provider} 登录",
   "alreadyHaveAccount": "已有账号？",
   "noAccount": "没有账号？",
+  "agreePrefix": "注册或登录即代表您已阅读并同意我们的《",
+  "userAgreement": "用户协议",
+  "agreeConjunction": "》和《",
+  "privacyPolicy": "隐私政策",
+  "agreeSuffix": "》",
   "toasts": {
     "codeRequired": "请输入验证码或恢复码",
     "loginFailed": "登录失败，请检查账号密码",

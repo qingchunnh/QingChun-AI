@@ -21,7 +21,10 @@
     "blog": "博客",
     "contact": "联系与支持",
     "copyright": "© 2026 神经魔法实验室. 青春AI.",
-    "license": "代码遵循 Apache License 2.0 授权。"
+    "license": "代码遵循 Apache License 2.0 授权。",
+    "basedOn": "基于",
+    "userAgreement": "用户协议",
+    "privacyPolicy": "隐私政策"
   },
   "appearance": "外观",
   "language": "语言",

@@ -9,6 +9,7 @@ import { PASSWORD_MIN_LENGTH } from "@/shared/auth/account-policy";
 import { useLoginPage } from "@/features/auth/hooks/use-auth-login-page";
 import { AppLogo } from "@/shared/components/app-logo";
 import { IdentityProviderIcon } from "@/shared/components/identity-provider-icon";
+import { PolicyLinks } from "@/shared/components/policy-links";
 import { TurnstileWidget } from "@/features/auth/components/turnstile-widget";
 import { cn } from "@/lib/utils";
 
@@ -227,6 +228,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                     required
                   />
                 </div>
+                <PolicyLinks namespace="login" />
                 <Button
                   className="mt-2 h-9 w-full rounded-md bg-foreground text-sm font-semibold text-background shadow-none hover:bg-foreground/90"
                   type="submit"
@@ -391,6 +393,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                   </div>
                 ) : null}
                 {registerDebugCode ? <p className="text-xs font-medium text-muted-foreground">{t("debugCode", { code: registerDebugCode })}</p> : null}
+                <PolicyLinks namespace="login" />
                 <Button
                   className="mt-1 h-9 w-full rounded-md bg-foreground text-sm font-semibold text-background shadow-none hover:bg-foreground/90"
                   type="submit"
@@ -403,6 +406,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
 
             {mode === "login" && !twoFactorChallengeToken && loginProviders.length > 0 ? (
               <div className={cn("space-y-2.5", passwordLoginEnabled ? "mt-5" : "mt-7")}>
+                {passwordLoginEnabled ? null : <PolicyLinks namespace="login" />}
                 {loginProviders.map((provider) => (
                   <Button
                     key={provider.publicID}

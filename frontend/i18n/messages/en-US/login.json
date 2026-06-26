@@ -34,6 +34,11 @@
   "providerLogin": "Continue with {provider}",
   "alreadyHaveAccount": "Already have an account?",
   "noAccount": "No account?",
+  "agreePrefix": "By signing in or registering, you acknowledge that you have read and agree to our ",
+  "userAgreement": "User Agreement",
+  "agreeConjunction": " and ",
+  "privacyPolicy": "Privacy Policy",
+  "agreeSuffix": ".",
   "toasts": {
     "codeRequired": "Enter a verification code or recovery code.",
     "loginFailed": "Sign-in failed. Check your account and password.",

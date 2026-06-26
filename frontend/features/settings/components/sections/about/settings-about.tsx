@@ -22,6 +22,9 @@ export function SettingsAbout() {
         contact: t("contact"),
         copyright: t("copyright"),
         license: t("license"),
+        basedOn: t("basedOn"),
+        userAgreement: t("userAgreement"),
+        privacyPolicy: t("privacyPolicy"),
       }}
     />
   );

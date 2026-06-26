@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { ExternalLink, Globe, Mail, Newspaper } from "lucide-react";
+import { ExternalLink, FileText, GitFork, Globe, House, ShieldCheck } from "lucide-react";
 
 import packageMeta from "@/package.json";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,9 @@ type AboutLabels = {
   contact: string;
   copyright: string;
   license: string;
+  basedOn: string;
+  userAgreement: string;
+  privacyPolicy: string;
 };
 
 type AboutSettingsContentProps = {
@@ -94,39 +97,39 @@ export function AboutSettingsContent({
   const links: AboutLinkItem[] = [
     {
       label: labels.website,
-      value: "deeix.com",
-      href: "https://deeix.com",
+      value: "ai.qingchun.xyz",
+      href: "https://ai.qingchun.xyz",
       icon: Globe,
     },
     {
       label: labels.official,
-      value: "DEEIX",
-      href: "https://github.com/DEEIX-AI",
-      providerIcon: { name: "GitHub", slug: "github" },
-    },
-    {
-      label: labels.social,
-      value: "@DEEIX_AI",
-      href: "https://x.com/DEEIX_AI",
-      providerIcon: { name: "X", slug: "x" },
+      value: "神经魔法实验室",
+      href: "https://ai.qingchun.xyz",
+      icon: House,
     },
     {
       label: labels.repository,
-      value: "DEEIX-Chat",
-      href: "https://github.com/DEEIX-AI/DEEIX-Chat",
+      value: "青春AI",
+      href: "https://github.com/qingchunnh/QingChun-AI",
       providerIcon: { name: "GitHub", slug: "github" },
     },
     {
-      label: labels.blog,
-      value: "blog.cheny.me",
-      href: "https://blog.cheny.me/",
-      icon: Newspaper,
+      label: labels.basedOn,
+      value: "DEEIX-Chat",
+      href: "https://github.com/DEEIX-AI/DEEIX-Chat",
+      icon: GitFork,
     },
     {
-      label: labels.contact,
-      value: "support@deeix.com",
-      href: "mailto:support@deeix.com",
-      icon: Mail,
+      label: labels.userAgreement,
+      value: "View",
+      href: "/policies/terms-of-use.html",
+      icon: FileText,
+    },
+    {
+      label: labels.privacyPolicy,
+      value: "View",
+      href: "/policies/privacy-policy.html",
+      icon: ShieldCheck,
     },
   ];
 

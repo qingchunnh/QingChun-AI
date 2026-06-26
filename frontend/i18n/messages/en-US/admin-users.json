@@ -51,7 +51,10 @@
     "blog": "Blog",
     "contact": "Contact & support",
     "copyright": "© 2026 Neural Magic Lab. QingChun AI.",
-    "license": "Code licensed under the Apache License 2.0."
+    "license": "Code licensed under the Apache License 2.0.",
+    "basedOn": "Based on",
+    "userAgreement": "User Agreement",
+    "privacyPolicy": "Privacy Policy"
   },
   "accessDeniedTitle": "Service unavailable",
   "accessDeniedDescription": "You are not allowed to access this page",
