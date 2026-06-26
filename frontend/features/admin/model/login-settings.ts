@@ -280,7 +280,7 @@ export function flattenLoginSettings(grouped: SettingsGrouped): Record<string, s
 export function applyLoginDefaults(settings: Record<string, string>): Record<string, string> {
   const result = {
     ...settings,
-    "auth.login_page_title": settings["auth.login_page_title"]?.trim() || "Sign in to DEEIX Chat",
+	"auth.login_page_title": settings["auth.login_page_title"]?.trim() || "Sign in to QingChun AI",
     "auth.login_default_next_path": settings["auth.login_default_next_path"]?.trim() || "/chat",
     "auth.username_login_enabled": settings["auth.username_login_enabled"] || "true",
     "auth.email_login_enabled": settings["auth.email_login_enabled"] || "true",

@@ -35,14 +35,14 @@ const jetBrainsMono = JetBrains_Mono({
 const webVitalsEnabled = process.env.NEXT_PUBLIC_WEB_VITALS_DEBUG === "true";
 
 export const metadata: Metadata = {
-  applicationName: "QingChun AI",
-  title: "QingChun AI",
-  description: "QingChun AI is a multi-model AI conversation system.",
+  applicationName: "青春AI",
+  title: "青春AI",
+  description: "青春AI 是一个多模型 AI 对话系统。",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "QingChun AI",
+    title: "青春AI",
   },
   formatDetection: {
     telephone: false,

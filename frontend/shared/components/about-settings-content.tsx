@@ -109,7 +109,7 @@ export function AboutSettingsContent({
     },
     {
       label: labels.repository,
-      value: "青春AI",
+      value: "QingChun-AI",
       href: "https://github.com/qingchunnh/QingChun-AI",
       providerIcon: { name: "GitHub", slug: "github" },
     },
