@@ -6,9 +6,9 @@ export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "QingChun AI",
-    short_name: "QingChun AI",
-    description: "QingChun AI is a multi-model AI conversation workspace.",
+    name: "青春AI",
+    short_name: "青春AI",
+    description: "青春AI 是一个多模型 AI 对话系统。",
     id: "/",
     start_url: "/chat",
     scope: "/",
