@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { AudioLines } from "@/components/animate-ui/icons/audio-lines";
 import { Blocks } from "@/components/animate-ui/icons/blocks";
 import { Pause } from "@/components/animate-ui/icons/pause";
-import { Send } from "@/components/animate-ui/icons/send";
+import { CircleArrowUp } from "@/components/animate-ui/icons/circle-arrow-up";
 import { Link as LinkIcon } from "@/components/animate-ui/icons/link";
 import { Crop } from "@/components/animate-ui/icons/crop";
 import { X as XIcon } from "@/components/animate-ui/icons/x";
@@ -967,7 +967,7 @@ function ChatInputComponent({
                 title={hasSubmitContent ? (sending ? tComposer("queueMessage") : tChat("send")) : sending ? tComposer("pauseGeneration") : speechInput.supported ? (speechInput.active ? tComposer("cancelVoiceInput") : tComposer("voiceInput")) : tComposer("voiceUnsupported")}
               >
                 {hasSubmitContent ? (
-                  <Send
+                  <CircleArrowUp
                     size={20}
                     strokeWidth={1.4}
                     animate={isVoiceHovered ? "default" : undefined}
