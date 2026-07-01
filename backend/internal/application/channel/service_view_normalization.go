@@ -129,6 +129,7 @@ func toModelUpstreamSourceView(item repository.ChannelModelSourceRow) ModelUpstr
 		ID:                     item.ID,
 		UpstreamID:             item.UpstreamID,
 		UpstreamName:           item.UpstreamName,
+		UpstreamStatus:         item.UpstreamStatus,
 		BaseURL:                item.BaseURL,
 		BindingCode:            item.BindingCode,
 		UpstreamModelName:      item.UpstreamModelName,
@@ -402,10 +403,14 @@ func normalizeUpstreamModelVendor(raw string, candidates ...string) string {
 }
 
 func reasoningContentPassbackRequired(protocol string, candidates ...string) bool {
-	if llm.NormalizeAdapter(protocol) != llm.AdapterOpenAIChatCompletions {
+	switch llm.NormalizeAdapter(protocol) {
+	case llm.AdapterOpenRouterChat:
+		return true
+	case llm.AdapterOpenAIChatCompletions:
+		return detectModelVendor(candidates...) == "deepseek"
+	default:
 		return false
 	}
-	return detectModelVendor(candidates...) == "deepseek"
 }
 
 func detectModelVendor(candidates ...string) string {

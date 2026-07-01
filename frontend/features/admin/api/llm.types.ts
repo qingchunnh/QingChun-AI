@@ -4,6 +4,7 @@ export type AdminLLMStatus = "active" | "inactive";
 export type AdminLLMModelAccessScope = "public" | "internal";
 export type AdminLLMAdapter =
   | "openai_responses"
+  | "openrouter_chat_completions"
   | "openrouter_responses"
   | "openai_chat_completions"
   | "openai_image_generations"
@@ -122,6 +123,7 @@ export type AdminLLMModelUpstreamSourceDTO = {
   id: number;
   upstreamID: number;
   upstreamName: string;
+  upstreamStatus: AdminLLMStatus;
   baseURL: string;
   bindingCode: string;
   upstreamModelName: string;

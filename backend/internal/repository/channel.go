@@ -167,6 +167,7 @@ type ChannelModelSourceRow struct {
 	domainchannel.PlatformModelRoute
 	UpstreamID             uint
 	UpstreamName           string
+	UpstreamStatus         string
 	BaseURL                string
 	BindingCode            string
 	UpstreamModelName      string
@@ -339,6 +340,7 @@ type ChannelRepository interface {
 	CreateUpstream(ctx context.Context, item *domainchannel.Upstream) error
 	UpdateUpstream(ctx context.Context, upstreamID uint, input UpdateChannelUpstreamInput) error
 	GetUpstreamByID(ctx context.Context, upstreamID uint) (*domainchannel.Upstream, error)
+	GetUpstreamListRowByID(ctx context.Context, upstreamID uint) (*ChannelUpstreamListRow, error)
 	ListUpstreams(ctx context.Context, input ListChannelUpstreamsInput) ([]ChannelUpstreamListRow, int64, error)
 	CreateModel(ctx context.Context, item *domainchannel.PlatformModel) error
 	UpdateModel(ctx context.Context, modelID uint, input UpdateChannelModelInput) error

@@ -2928,6 +2928,8 @@ definitions:
         type: string
       upstreamName:
         type: string
+      upstreamStatus:
+        type: string
       weight:
         type: integer
     type: object
@@ -4893,7 +4895,7 @@ info:
   contact: {}
   description: DEEIX Chat 后端 API 文档
   title: DEEIX Chat API
-  version: 0.2.8
+  version: "0.3.0"
 paths:
   /admin/announcements:
     get:
@@ -5637,6 +5639,25 @@ paths:
       security:
       - BearerAuth: []
       summary: 管理员查询对话事件
+      tags:
+      - admin
+  /admin/conversations/export:
+    get:
+      description: 流式导出全量会话及消息为 NDJSON 文件，最后一行为 export_manifest 元数据
+      produces:
+      - application/x-ndjson
+      responses:
+        "200":
+          description: NDJSON stream
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_transport_http_admin.ErrorDoc'
+      security:
+      - BearerAuth: []
+      summary: 管理员导出全量对话数据
       tags:
       - admin
   /admin/llm/models:
@@ -7981,6 +8002,11 @@ paths:
       consumes:
       - application/json
       description: 登录用户获取当前可展示的站点公告列表
+      parameters:
+      - description: 是否包含今日不再显示的公告
+        in: query
+        name: include_dismissed
+        type: boolean
       produces:
       - application/json
       responses:

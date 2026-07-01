@@ -1181,6 +1181,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/conversations/export": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "流式导出全量会话及消息为 NDJSON 文件，最后一行为 export_manifest 元数据",
+                "produces": [
+                    "application/x-ndjson"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "管理员导出全量对话数据",
+                "responses": {
+                    "200": {
+                        "description": "NDJSON stream",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_admin.ErrorDoc"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/llm/models": {
             "get": {
                 "security": [
@@ -4889,6 +4920,14 @@ const docTemplate = `{
                     "announcements"
                 ],
                 "summary": "获取当前公告",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "是否包含今日不再显示的公告",
+                        "name": "include_dismissed",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -13916,6 +13955,9 @@ const docTemplate = `{
                 "upstreamName": {
                     "type": "string"
                 },
+                "upstreamStatus": {
+                    "type": "string"
+                },
                 "weight": {
                     "type": "integer"
                 }
@@ -16878,7 +16920,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.2.8",
+	Version:          "0.3.0",
 	Host:             "",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
