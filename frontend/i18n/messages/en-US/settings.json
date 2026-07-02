@@ -348,7 +348,7 @@
       "description": "The model preselected for new chats. Leave empty to use the first available system-recommended model.",
       "systemRecommended": "System default",
       "autoTitle": "Auto-generate titles",
-      "autoTitleDescription": "When disabled, new chats use the first 20 characters of the first message as the title."
+      "autoTitleDescription": "When disabled, new chats use the first 40 characters of the first message as the title."
     },
     "input": {
       "sectionTitle": "Input and sending",

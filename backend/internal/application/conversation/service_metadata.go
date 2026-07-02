@@ -18,7 +18,7 @@ import (
 
 const (
 	conversationMetadataMessageMaxTokens    = int64(5000)
-	conversationFallbackTitleMaxRunes       = 20
+	conversationFallbackTitleMaxRunes       = 40
 	conversationAutoGenerateTitleSettingKey = "chat.auto_generate_title"
 	conversationMetadataRefreshPending      = "pending"
 	conversationMetadataRefreshNotNeeded    = "not_needed"
