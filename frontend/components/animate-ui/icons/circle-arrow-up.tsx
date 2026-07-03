@@ -17,19 +17,13 @@ const animations = {
     circle: {},
     group: {
       initial: {
-        scale: 1,
         y: 0,
       },
       animate: {
-        scale: [1, 0.8, 1, 1, 1],
-        y: [0, '10%', '-100%', '125%', 0],
+        y: [0, '15%', '-45%', 0],
         transition: {
-          default: { ease: 'easeInOut', duration: 1.2 },
-          y: {
-            ease: 'easeInOut',
-            duration: 1.2,
-            times: [0, 0.25, 0.5, 0.5, 1],
-          },
+          ease: 'easeInOut',
+          duration: 0.7,
         },
       },
     },
