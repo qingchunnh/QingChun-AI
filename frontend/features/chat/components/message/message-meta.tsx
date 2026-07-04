@@ -68,6 +68,11 @@ export type ChatMetaMessage = {
   billingCost?: ChatBillingCost;
 };
 
+// Feature flag: message feedback (thumbs up/down) is temporarily disabled
+// because the backend is not wired up yet. Flip to `true` to re-enable the
+// like/dislike buttons once the feedback API is implemented.
+const ENABLE_MESSAGE_FEEDBACK = false;
+
 export type AssistantReaction = "up" | "down" | null;
 
 type MessageTimestampLabel = {
@@ -1064,22 +1069,26 @@ export function AssistantMessageMeta({
                     <Brush size={14} strokeWidth={1.8} animateOnHover="default" />
                   </MetaIconButton>
                 ) : null}
-                <MetaIconButton
-                  label={t("likeReply")}
-                  className={reaction === "up" ? "text-foreground" : undefined}
-                  disabled={isLive}
-                  onClick={() => onReact(reaction === "up" ? null : "up")}
-                >
-                  <ThumbsUp size={14} strokeWidth={1.8} animateOnHover="default" />
-                </MetaIconButton>
-                <MetaIconButton
-                  label={t("dislikeReply")}
-                  className={reaction === "down" ? "text-foreground" : undefined}
-                  disabled={isLive}
-                  onClick={() => onReact(reaction === "down" ? null : "down")}
-                >
-                  <ThumbsDown size={14} strokeWidth={1.8} animateOnHover="default" />
-                </MetaIconButton>
+                {ENABLE_MESSAGE_FEEDBACK ? (
+                  <>
+                    <MetaIconButton
+                      label={t("likeReply")}
+                      className={reaction === "up" ? "text-foreground" : undefined}
+                      disabled={isLive}
+                      onClick={() => onReact(reaction === "up" ? null : "up")}
+                    >
+                      <ThumbsUp size={14} strokeWidth={1.8} animateOnHover="default" />
+                    </MetaIconButton>
+                    <MetaIconButton
+                      label={t("dislikeReply")}
+                      className={reaction === "down" ? "text-foreground" : undefined}
+                      disabled={isLive}
+                      onClick={() => onReact(reaction === "down" ? null : "down")}
+                    >
+                      <ThumbsDown size={14} strokeWidth={1.8} animateOnHover="default" />
+                    </MetaIconButton>
+                  </>
+                ) : null}
                 {canRetry ? (
                   <MetaIconButton
                     label={t("retryReply")}
