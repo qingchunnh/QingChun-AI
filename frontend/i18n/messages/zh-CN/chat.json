@@ -4,7 +4,7 @@
   "modelListLoadFailed": "模型列表加载失败",
   "placeholder": "发送消息给 青春AI",
   "projectMode": "项目模式",
-  "projectModeTooltip": "在此模式下，新会话会创建到当前项目。项目提示词仅对聊天模型请求生效；图像生成、图像编辑等非聊天能力不会应用。",
+  "projectModeTooltip": "在此模式下，新对话会创建到当前项目。项目提示词仅对聊天模型请求生效；图像生成、图像编辑等非聊天能力不会应用。",
   "send": "发送",
   "stop": "停止",
   "shareConversation": "分享此对话",
@@ -74,12 +74,12 @@
     }
   },
   "labelMenu": {
-    "actions": "会话操作",
-    "star": "设为星标",
-    "unstar": "取消星标",
+    "actions": "对话操作",
+    "star": "设为收藏",
+    "unstar": "取消收藏",
     "rename": "重新命名",
-    "renameDescription": "请输入新的会话名称",
-    "renamePlaceholder": "请输入新的会话名称",
+    "renameDescription": "请输入新的对话名称",
+    "renamePlaceholder": "请输入新的对话名称",
     "autoRename": "自动命名",
     "autoRenameFailed": "自动命名失败",
     "moveToProject": "移至项目",
@@ -91,7 +91,7 @@
     "delete": "删除"
   },
   "screenshot": {
-    "captureFull": "完整会话截图",
+    "captureFull": "完整对话截图",
     "captureSelect": "选择消息截图",
     "selectMessage": "选择此消息",
     "selectedCount": "已选 {count} 条消息",
@@ -102,10 +102,10 @@
     "generating": "正在生成截图…",
     "ready": "截图已生成",
     "failed": "截图生成失败",
-    "loadLimitReached": "会话过长，请选择部分消息进行截图。",
-    "tooLarge": "会话内容过大，请选择部分消息进行截图。",
+    "loadLimitReached": "对话过长，请选择部分消息进行截图。",
+    "tooLarge": "对话内容过大，请选择部分消息进行截图。",
     "emptySelection": "请至少选择一条消息",
-    "previewTitle": "会话截图",
+    "previewTitle": "对话截图",
     "previewDescription": "预览生成的图片，可下载或复制到剪贴板。",
     "close": "关闭",
     "copy": "复制",
@@ -212,7 +212,7 @@
     "savePreference": "保存偏好"
   },
   "loadError": {
-    "title": "会话加载失败",
+    "title": "对话加载失败",
     "prefix": "您可以尝试",
     "refresh": "刷新",
     "or": "或",
@@ -256,7 +256,7 @@
     "noModel": "暂无可用模型",
     "selectModelFirst": "请先选择一个模型。",
     "signInRequired": "未登录，无法发送消息",
-    "createConversationFailed": "创建新会话失败",
+    "createConversationFailed": "创建新对话失败",
     "processingAttachments": "正在处理附件…",
     "retrievingContent": "正在检索相关内容…",
     "retryLater": "请稍后重试。",
@@ -289,8 +289,8 @@
     "retryReplyMissingUser": "没有找到对应的用户消息。"
   },
   "data": {
-    "signInRequired": "未登录，无法加载会话消息",
-    "loadFailed": "加载会话消息失败"
+    "signInRequired": "未登录，无法加载对话消息",
+    "loadFailed": "加载对话消息失败"
   },
   "models": {
     "signInRequired": "未登录，无法加载模型列表",

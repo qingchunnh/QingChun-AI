@@ -316,7 +316,7 @@
       "invalidJSON": "当前模型能力 JSON 格式不正确，请先修正后再使用可视化配置。",
       "parametersTab": "参数",
       "parametersIntro": "配置用户可见的模型参数；填写默认值时会同步作为该参数的请求默认值。",
-      "toolsIntro": "配置该模型允许使用的官方原生工具；只有管理员在这里开启的官方工具才会进入会话配置。",
+      "toolsIntro": "配置该模型允许使用的官方原生工具；只有管理员在这里开启的官方工具才会进入对话配置。",
       "defaultsHelp": "默认参数会写入 defaultOptions。value 按 JSON 值解析，例如 0.7、true、null、\"high\" 或对象。",
       "controlsHelp": "参数控件会写入 optionControls。path 对应真实请求参数路径，最终是否透传仍由参数过滤规则决定。",
       "toolsHelp": "原生官方工具会写入 nativeTools。同一个工具可配置多个适用协议；默认开启会自动进入用户默认参数；用户 JSON 中的 tools 只有命中这里的官方工具才会被后端保留。",
