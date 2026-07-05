@@ -320,8 +320,8 @@ export function AnnouncementDialogHost() {
                     announcementTypeAccentClassName(item.type),
                     isAnnouncementRead(item) && "opacity-55",
                     index === activeIndex
-                      ? "bg-primary/10 text-foreground ring-1 ring-inset ring-primary/30"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                      ? "bg-foreground/10 text-pure-foreground"
+                      : "text-foreground/70 hover:bg-muted/60 hover:text-foreground",
                   )}
                   onClick={() => setActiveIndex(index)}
                 >
@@ -329,7 +329,7 @@ export function AnnouncementDialogHost() {
                     {!isAnnouncementRead(item) ? <span aria-hidden="true" className="size-1.5 rounded-full bg-red-500" /> : null}
                     {item.pinned ? <Pin className="size-3 text-muted-foreground/70" /> : null}
                   </span>
-                  <span className={cn("block truncate", index === activeIndex ? "font-semibold text-foreground" : "font-medium")}>{item.title}</span>
+                  <span className={cn("block truncate", index === activeIndex ? "font-semibold text-pure-foreground" : "font-medium")}>{item.title}</span>
                   <span className="mt-0.5 block text-xs text-muted-foreground">
                     {formatAnnouncementDate(item.updatedAt, locale)}
                   </span>
