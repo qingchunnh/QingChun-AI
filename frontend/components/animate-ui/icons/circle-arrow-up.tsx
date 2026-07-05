@@ -20,7 +20,7 @@ const animations = {
         y: 0,
       },
       animate: {
-        y: [0, '15%', '-45%', 0],
+        y: [0, '15%', '-35%', 0],
         transition: {
           ease: 'easeInOut',
           duration: 0.7,
