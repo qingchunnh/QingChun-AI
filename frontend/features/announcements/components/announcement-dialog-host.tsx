@@ -87,13 +87,13 @@ function announcementTypeRank(value: string): number {
 function announcementTypeAccentClassName(value: string): string {
   switch (normalizeAnnouncementType(value)) {
     case "critical":
-      return "before:bg-red-500/55 dark:before:bg-red-400/55";
+      return "before:bg-red-500 dark:before:bg-red-400";
     case "warning":
-      return "before:bg-yellow-500/60 dark:before:bg-yellow-400/55";
+      return "before:bg-yellow-500 dark:before:bg-yellow-400";
     case "info":
-      return "before:bg-blue-500/55 dark:before:bg-blue-400/55";
+      return "before:bg-blue-500 dark:before:bg-blue-400";
     case "normal":
-      return "before:bg-emerald-500/55 dark:before:bg-emerald-400/55";
+      return "before:bg-emerald-500 dark:before:bg-emerald-400";
     default:
       return "before:bg-border";
   }
