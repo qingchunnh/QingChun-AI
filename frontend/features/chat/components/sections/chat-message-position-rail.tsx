@@ -29,7 +29,7 @@ type TurnPreviewItem = {
 type PreviewPosition = {
   boundaryBottom: number;
   boundaryTop: number;
-  left: number;
+  right: number;
   maxHeight: number;
   top: number;
 };
@@ -90,7 +90,7 @@ function ChatMessagePositionPreview({
     <div
       ref={previewRef}
       className="pointer-events-none fixed z-[9999] w-[min(22rem,calc(100vw-5rem))] -translate-y-1/2"
-      style={{ left: position.left, maxHeight: position.maxHeight, top }}
+      style={{ right: position.right, maxHeight: position.maxHeight, top }}
       data-screenshot-exclude="true"
     >
       <div className="max-h-full scroll-fade-y scroll-fade-12 overflow-y-auto rounded-lg bg-sidebar-accent px-3 py-2 text-left text-foreground [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -199,6 +199,7 @@ function ChatMessagePositionRailComponent({
   const activatePreview = React.useCallback((id: string, target: HTMLElement) => {
     const targetRect = target.getBoundingClientRect();
     const boundaryRect = boundaryRef.current?.getBoundingClientRect();
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
     const boundaryTop = (boundaryRect?.top ?? 0) + PREVIEW_EDGE_MARGIN_PX;
     const boundaryBottom = (boundaryRect?.bottom ?? viewportHeight) - PREVIEW_EDGE_MARGIN_PX;
@@ -206,7 +207,7 @@ function ChatMessagePositionRailComponent({
     setPreviewPosition({
       boundaryBottom,
       boundaryTop,
-      left: targetRect.right + PREVIEW_OFFSET_X_PX,
+      right: viewportWidth - targetRect.left + PREVIEW_OFFSET_X_PX,
       maxHeight: Math.max(0, boundaryBottom - boundaryTop),
       top: targetRect.top + targetRect.height / 2,
     });
@@ -355,7 +356,7 @@ function ChatMessagePositionRailComponent({
 
   return (
     <div
-      className="pointer-events-none absolute bottom-3 left-2 top-3 z-30 hidden w-6 lg:block"
+      className="pointer-events-none absolute bottom-3 right-2 top-3 z-30 hidden w-6 lg:block"
       data-screenshot-exclude="true"
       onMouseLeave={clearPreview}
     >
