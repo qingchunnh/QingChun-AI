@@ -70,7 +70,10 @@
   "time": {
     "todayTime": "{time}",
     "thisYearDateTime": "{month}月{day}日 {time}",
-    "fullDateTime": "{year}年{month}月{day}日 {time}"
+    "fullDateTime": "{year}年{month}月{day}日 {time}",
+    "messageTodayTime": "今天 {time}",
+    "messageYesterdayTime": "昨天 {time}",
+    "messageFullDateTime": "{year}-{month}-{day} {time}"
   },
   "table": {
     "search": "搜索",

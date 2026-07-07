@@ -69,8 +69,11 @@
   },
   "time": {
     "todayTime": "{time}",
-    "thisYearDateTime": "{month}/{day} {time}",
-    "fullDateTime": "{year}/{month}/{day} {time}"
+    "thisYearDateTime": "{month}-{day} {time}",
+    "fullDateTime": "{year}-{month}-{day} {time}",
+    "messageTodayTime": "Today {time}",
+    "messageYesterdayTime": "Yesterday {time}",
+    "messageFullDateTime": "{year}-{month}-{day} {time}"
   },
   "table": {
     "search": "Search",

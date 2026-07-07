@@ -82,13 +82,13 @@ type MessageTimestampLabel = {
 
 type MessageTimestampValues = {
   year: number;
-  month: number;
-  day: number;
+  month: string;
+  day: string;
   time: string;
 };
 
 type MessageTimestampFormatter = (
-  key: "todayTime" | "thisYearDateTime" | "fullDateTime",
+  key: "messageTodayTime" | "messageYesterdayTime" | "messageFullDateTime",
   values: MessageTimestampValues,
 ) => string;
 
@@ -104,28 +104,36 @@ function formatMessageTimestamp(value: string | undefined, formatLabel: MessageT
 
   const now = new Date();
   const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
+  const timeLabel = [hours, minutes, seconds].map((part) => String(part).padStart(2, "0")).join(":");
+  const values = { year, month, day, time: timeLabel };
+  const title = formatLabel("messageFullDateTime", values);
+
   const isToday =
     year === now.getFullYear() &&
     date.getMonth() === now.getMonth() &&
-    day === now.getDate();
-  const isCurrentYear = year === now.getFullYear();
-  const timeLabel = [hours, minutes, seconds].map((part) => String(part).padStart(2, "0")).join(":");
-  const values = { year, month, day, time: timeLabel };
-  const title = formatLabel("fullDateTime", values);
+    date.getDate() === now.getDate();
 
   if (isToday) {
-    return { label: formatLabel("todayTime", values), title };
+    return { label: formatLabel("messageTodayTime", values), title };
   }
 
-  return {
-    label: formatLabel(isCurrentYear ? "thisYearDateTime" : "fullDateTime", values),
-    title,
-  };
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday =
+    year === yesterday.getFullYear() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getDate() === yesterday.getDate();
+
+  if (isYesterday) {
+    return { label: formatLabel("messageYesterdayTime", values), title };
+  }
+
+  return { label: formatLabel("messageFullDateTime", values), title };
 }
 
 function MessageTimestamp({ timestamp }: { timestamp: MessageTimestampLabel | null }) {
