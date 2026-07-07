@@ -73,7 +73,7 @@
     "fullDateTime": "{year}-{month}-{day} {time}",
     "messageTodayTime": "Today {time}",
     "messageYesterdayTime": "Yesterday {time}",
-    "messageFullDateTime": "{year}-{month}-{day} {time}"
+    "messageFullDateTime": "{year}-{paddedMonth}-{paddedDay} {time}"
   },
   "table": {
     "search": "Search",

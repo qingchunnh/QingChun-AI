@@ -82,13 +82,15 @@ type MessageTimestampLabel = {
 
 type MessageTimestampValues = {
   year: number;
-  month: string;
-  day: string;
+  month: number;
+  day: number;
   time: string;
+  paddedMonth: string;
+  paddedDay: string;
 };
 
 type MessageTimestampFormatter = (
-  key: "messageTodayTime" | "messageYesterdayTime" | "messageFullDateTime",
+  key: "messageTodayTime" | "messageYesterdayTime" | "messageFullDateTime" | "fullDateTime",
   values: MessageTimestampValues,
 ) => string;
 
@@ -104,14 +106,16 @@ function formatMessageTimestamp(value: string | undefined, formatLabel: MessageT
 
   const now = new Date();
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const paddedMonth = String(month).padStart(2, "0");
+  const paddedDay = String(day).padStart(2, "0");
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
   const timeLabel = [hours, minutes, seconds].map((part) => String(part).padStart(2, "0")).join(":");
-  const values = { year, month, day, time: timeLabel };
-  const title = formatLabel("messageFullDateTime", values);
+  const values = { year, month, day, paddedMonth, paddedDay, time: timeLabel };
+  const title = formatLabel("fullDateTime", values);
 
   const isToday =
     year === now.getFullYear() &&

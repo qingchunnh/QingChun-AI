@@ -73,7 +73,7 @@
     "fullDateTime": "{year}年{month}月{day}日 {time}",
     "messageTodayTime": "今天 {time}",
     "messageYesterdayTime": "昨天 {time}",
-    "messageFullDateTime": "{year}-{month}-{day} {time}"
+    "messageFullDateTime": "{year}-{paddedMonth}-{paddedDay} {time}"
   },
   "table": {
     "search": "搜索",
