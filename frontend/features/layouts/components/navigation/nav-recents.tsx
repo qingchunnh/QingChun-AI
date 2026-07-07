@@ -210,7 +210,7 @@ export function NavRecents() {
     <>
       <div className={cn("relative z-0 group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:opacity-0")}>
         <Collapsible open={recentsOpen} onOpenChange={setRecentsOpen}>
-          <SidebarGroup>
+          <SidebarGroup className="py-1">
             <SidebarGroupLabel
               asChild
               className="w-fit max-w-full self-start cursor-pointer gap-1 pr-1 transition-[color,margin,opacity] hover:text-sidebar-foreground"

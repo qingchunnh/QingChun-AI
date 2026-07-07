@@ -1069,7 +1069,7 @@ export function NavProjects() {
       <>
         <div className="relative z-10 group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:opacity-0">
           <Collapsible open={projectsOpen} onOpenChange={setProjectsOpen}>
-            <SidebarGroup>
+            <SidebarGroup className="py-1">
               <ProjectGroupHeader
                 title={t("title")}
                 createLabel={t("create")}
@@ -1094,7 +1094,7 @@ export function NavProjects() {
     <>
       <div className="relative z-10 group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:opacity-0">
         <Collapsible open={projectsOpen} onOpenChange={setProjectsOpen}>
-          <SidebarGroup>
+          <SidebarGroup className="py-1">
             <ProjectGroupHeader
               title={t("title")}
               createLabel={t("create")}

@@ -272,7 +272,7 @@ export function NavStarred() {
         transition={SIDEBAR_OVERFLOW_ROW_TRANSITION}
       >
         <Collapsible open={starredOpen} onOpenChange={setStarredOpen}>
-          <SidebarGroup>
+          <SidebarGroup className="py-1">
             <SidebarGroupLabel
               asChild
               className="w-fit max-w-full self-start cursor-pointer gap-1 pr-1 transition-[color,margin,opacity] hover:text-sidebar-foreground"
