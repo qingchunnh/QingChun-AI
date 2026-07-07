@@ -192,9 +192,10 @@ export function NavRecents() {
   )
   const timeGroups = React.useMemo(
     () => groupConversationsByTime(visibleRecentItems, {
+      today: t("timeGroup.today"),
       yesterday: t("timeGroup.yesterday"),
       lastSevenDays: t("timeGroup.lastSevenDays"),
-      earlier: t("timeGroup.earlier"),
+      lastThirtyDays: t("timeGroup.lastThirtyDays"),
     }),
     [visibleRecentItems, t],
   )
@@ -245,60 +246,60 @@ export function NavRecents() {
                     ) : null}
 
                     {timeGroups.map((group, groupIndex) => (
-                      <React.Fragment key={group.key}>
-                        {group.showLabel ? (
-                          <li className={cn("px-2 pb-0.5 text-[11px] font-medium text-sidebar-foreground/40", groupIndex === 0 ? "pt-0" : "pt-3")}>
-                            {group.label}
-                          </li>
-                        ) : null}
-                        {group.items.map((item) => {
-                          const title = item.title || t("untitled")
-                          const publicID = item.publicID
+                      <li key={group.key} className="list-none">
+                        <div className={cn("px-2 pb-1 text-[11px] font-medium text-sidebar-foreground/50", groupIndex === 0 ? "pt-0" : "pt-3")}>
+                          {group.label}
+                        </div>
+                        <ul className="list-none">
+                          {group.items.map((item) => {
+                            const title = item.title || t("untitled")
+                            const publicID = item.publicID
 
-                          return (
-                            <SidebarConversationItem
-                              key={publicID}
-                              active={activeConversationID === publicID}
-                              item={{
-                                publicID,
-                                title,
-                                url: `/chat?conversation_id=${publicID}`,
-                                starred: item.isStarred,
-                                shareActive: item.shareStatus === "active" && Boolean(item.shareID?.trim()),
-                              }}
-                              starAction={{
-                                label: item.isStarred ? t("row.unstar") : t("row.star"),
-                                icon: Star,
-                                onSelect: (targetPublicID) => onToggleStar(targetPublicID, !item.isStarred),
-                              }}
-                              projectMenu={{
-                                label: t("row.moveToProject"),
-                                unassignedLabel: t("projects.unassigned"),
-                                currentProjectID: item.projectID,
-                                projects,
-                                onSelect: (targetPublicID, projectID) => {
-                                  void setProjectByPublicID(targetPublicID, projectID)
-                                },
-                              }}
-                              isTransferring={transferringStarPublicID === publicID}
-                              onRename={onRename}
-                              isRenaming={renameTarget?.publicID === publicID}
-                              renameValue={renameTarget?.publicID === publicID ? renameValue : title}
-                              onRenameValueChange={setRenameValue}
-                              onRenameCommit={onRenameCommit}
-                              onRenameCancel={onRenameCancel}
-                              onAutoRename={onAutoRename}
-                              isAutoRenaming={autoRenamingPublicID === publicID}
-                              onArchive={onArchive}
-                              onShare={onShare}
-                              onExport={onExport}
-                              onDelete={onDelete}
-                              onNavigate={onNavigate}
-                              menuTriggerID={`recent-item-menu-trigger-${publicID}`}
-                            />
-                          )
-                        })}
-                      </React.Fragment>
+                            return (
+                              <SidebarConversationItem
+                                key={publicID}
+                                active={activeConversationID === publicID}
+                                item={{
+                                  publicID,
+                                  title,
+                                  url: `/chat?conversation_id=${publicID}`,
+                                  starred: item.isStarred,
+                                  shareActive: item.shareStatus === "active" && Boolean(item.shareID?.trim()),
+                                }}
+                                starAction={{
+                                  label: item.isStarred ? t("row.unstar") : t("row.star"),
+                                  icon: Star,
+                                  onSelect: (targetPublicID) => onToggleStar(targetPublicID, !item.isStarred),
+                                }}
+                                projectMenu={{
+                                  label: t("row.moveToProject"),
+                                  unassignedLabel: t("projects.unassigned"),
+                                  currentProjectID: item.projectID,
+                                  projects,
+                                  onSelect: (targetPublicID, projectID) => {
+                                    void setProjectByPublicID(targetPublicID, projectID)
+                                  },
+                                }}
+                                isTransferring={transferringStarPublicID === publicID}
+                                onRename={onRename}
+                                isRenaming={renameTarget?.publicID === publicID}
+                                renameValue={renameTarget?.publicID === publicID ? renameValue : title}
+                                onRenameValueChange={setRenameValue}
+                                onRenameCommit={onRenameCommit}
+                                onRenameCancel={onRenameCancel}
+                                onAutoRename={onAutoRename}
+                                isAutoRenaming={autoRenamingPublicID === publicID}
+                                onArchive={onArchive}
+                                onShare={onShare}
+                                onExport={onExport}
+                                onDelete={onDelete}
+                                onNavigate={onNavigate}
+                                menuTriggerID={`recent-item-menu-trigger-${publicID}`}
+                              />
+                            )
+                          })}
+                        </ul>
+                      </li>
                     ))}
 
                     {loadingMore ? (

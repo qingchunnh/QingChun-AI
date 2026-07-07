@@ -1,9 +1,10 @@
 {
-  "title": "Recent",
+  "title": "Conversations",
   "timeGroup": {
+    "today": "Today",
     "yesterday": "Yesterday",
     "lastSevenDays": "Last 7 days",
-    "earlier": "Earlier"
+    "lastThirtyDays": "Last 30 days"
   },
   "collapseSection": "Collapse recent conversations",
   "expandSection": "Expand recent conversations",
