@@ -38,70 +38,95 @@ export function useLoadMoreSentinel({
       return;
     }
 
-    const target = targetRef.current;
-    if (!target) {
-      return;
-    }
-
-    const root = rootRef?.current ?? target.parentElement?.closest<HTMLElement>("[data-sidebar-scroll-root='true']") ?? null;
-    const marginPx = rootMarginToPixels(rootMargin);
-    let animationFrame: number | null = null;
     let disposed = false;
+    let pollHandle: number | null = null;
+    let teardownObserver: (() => void) | undefined;
 
-    const isNearLoadMorePoint = () => {
-      if (root) {
-        return root.scrollHeight - root.scrollTop - root.clientHeight <= marginPx;
-      }
-      return target.getBoundingClientRect().top <= window.innerHeight + marginPx;
-    };
+    const setupObserver = (target: Element) => {
+      const root =
+        rootRef?.current ??
+        target.parentElement?.closest<HTMLElement>("[data-sidebar-scroll-root='true']") ??
+        null;
+      const marginPx = rootMarginToPixels(rootMargin);
+      let animationFrame: number | null = null;
 
-    const check = () => {
-      animationFrame = null;
-      if (disposed || !isNearLoadMorePoint()) {
-        return;
-      }
-      void onLoadMoreRef.current();
-    };
-
-    const scheduleCheck = () => {
-      if (animationFrame !== null) {
-        return;
-      }
-      animationFrame = window.requestAnimationFrame(check);
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry?.isIntersecting) {
-          void onLoadMoreRef.current();
+      const isNearLoadMorePoint = () => {
+        if (root) {
+          return root.scrollHeight - root.scrollTop - root.clientHeight <= marginPx;
         }
-      },
-      { root, rootMargin },
-    );
+        return target.getBoundingClientRect().top <= window.innerHeight + marginPx;
+      };
 
-    observer.observe(target);
-    const scrollTarget: HTMLElement | Window = root ?? window;
-    scrollTarget.addEventListener("scroll", scheduleCheck, { passive: true });
-    window.addEventListener("resize", scheduleCheck);
+      const check = () => {
+        animationFrame = null;
+        if (disposed || !isNearLoadMorePoint()) {
+          return;
+        }
+        void onLoadMoreRef.current();
+      };
 
-    const resizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(scheduleCheck);
-    resizeObserver?.observe(target);
-    if (root) {
-      resizeObserver?.observe(root);
-    }
+      const scheduleCheck = () => {
+        if (animationFrame !== null) {
+          return;
+        }
+        animationFrame = window.requestAnimationFrame(check);
+      };
 
-    scheduleCheck();
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          if (entry?.isIntersecting) {
+            void onLoadMoreRef.current();
+          }
+        },
+        { root, rootMargin },
+      );
+
+      observer.observe(target);
+      const scrollTarget: HTMLElement | Window = root ?? window;
+      scrollTarget.addEventListener("scroll", scheduleCheck, { passive: true });
+      window.addEventListener("resize", scheduleCheck);
+
+      const resizeObserver =
+        typeof ResizeObserver === "undefined" ? null : new ResizeObserver(scheduleCheck);
+      resizeObserver?.observe(target);
+      if (root) {
+        resizeObserver?.observe(root);
+      }
+
+      scheduleCheck();
+
+      return () => {
+        observer.disconnect();
+        scrollTarget.removeEventListener("scroll", scheduleCheck);
+        window.removeEventListener("resize", scheduleCheck);
+        resizeObserver?.disconnect();
+        if (animationFrame !== null) {
+          window.cancelAnimationFrame(animationFrame);
+        }
+      };
+    };
+
+    const attempt = () => {
+      if (disposed) {
+        return;
+      }
+      const target = targetRef.current;
+      if (!target) {
+        pollHandle = window.requestAnimationFrame(attempt);
+        return;
+      }
+      teardownObserver = setupObserver(target);
+    };
+
+    attempt();
 
     return () => {
       disposed = true;
-      observer.disconnect();
-      scrollTarget.removeEventListener("scroll", scheduleCheck);
-      window.removeEventListener("resize", scheduleCheck);
-      resizeObserver?.disconnect();
-      if (animationFrame !== null) {
-        window.cancelAnimationFrame(animationFrame);
+      if (pollHandle !== null) {
+        window.cancelAnimationFrame(pollHandle);
       }
+      teardownObserver?.();
     };
   }, [enabled, rootMargin, rootRef, targetRef]);
 }
