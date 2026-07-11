@@ -10,6 +10,8 @@ import { useLoginPage } from "@/features/auth/hooks/use-auth-login-page";
 import { AppLogo } from "@/shared/components/app-logo";
 import { IdentityProviderIcon } from "@/shared/components/identity-provider-icon";
 import { PolicyLinks } from "@/shared/components/policy-links";
+import { PoweredByDeeix } from "@/shared/components/powered-by-deeix";
+import { brandAssets } from "@/shared/lib/branding";
 import { TurnstileWidget } from "@/features/auth/components/turnstile-widget";
 import { cn } from "@/lib/utils";
 
@@ -448,7 +450,14 @@ export function LoginPage({ nextPath }: LoginPageProps) {
             </div>
           ) : null}
         </div>
+
       </div>
+
+      {brandAssets.logo ? (
+        <div className="fixed bottom-4 right-4">
+          <PoweredByDeeix />
+        </div>
+      ) : null}
     </main>
   );
 }

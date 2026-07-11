@@ -7,7 +7,7 @@ import { AppI18nProvider } from "@/i18n/app-i18n-provider";
 import { DevtoolsBrandBanner } from "@/shared/components/devtools-brand-banner";
 import { ThemeProvider } from "@/shared/components/theme-provider";
 import { PWAServiceWorkerRegister } from "@/shared/components/pwa-service-worker-register";
-import { pwaAsset } from "@/shared/pwa/assets";
+import { brandAssets, brandText } from "@/shared/lib/branding";
 import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
@@ -30,26 +30,26 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "青春AI",
-  title: "青春AI",
-  description: "青春AI 是一个多模型 AI 对话系统。",
+  applicationName: brandText.title,
+  title: brandText.title,
+  description: brandText.description,
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "青春AI",
+    title: brandText.title,
   },
   formatDetection: {
     telephone: false,
   },
   icons: {
     icon: [
-      { url: pwaAsset("/pwa/icon.svg"), type: "image/svg+xml" },
-      { url: pwaAsset("/pwa/icon-192.png"), sizes: "192x192", type: "image/png" },
-      { url: pwaAsset("/pwa/icon-512.png"), sizes: "512x512", type: "image/png" },
+      { url: brandAssets.favicon },
+      { url: brandAssets.pwaIcon192, sizes: "192x192", type: "image/png" },
+      { url: brandAssets.pwaIcon512, sizes: "512x512", type: "image/png" },
     ],
     apple: [
-      { url: pwaAsset("/pwa/apple-touch-icon.png"), sizes: "180x180", type: "image/png" },
+      { url: brandAssets.appleTouchIcon180, sizes: "180x180", type: "image/png" },
     ],
   },
 };

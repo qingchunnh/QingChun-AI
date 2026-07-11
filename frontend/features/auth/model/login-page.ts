@@ -6,7 +6,6 @@ export type LoginMode = "login" | "register" | "reset-password";
 export type ProviderAuthIntent = "login" | "register";
 
 export const DEFAULT_LOGIN_SETTINGS: LoginPageSettings = {
-  title: "Sign in to QingChun AI",
   defaultNextPath: DEFAULT_AUTH_NEXT_PATH,
 };
 
