@@ -344,7 +344,7 @@ function TokenBadge({
   reasoningTokens?: number;
 }) {
   const t = useTranslations("chat.meta");
-  const inputValue = inputTokens ?? 0;
+  const inputValue = (inputTokens ?? 0) + (cacheReadTokens ?? 0);
   const outputValue = outputTokens ?? 0;
   const cacheReadValue = cacheReadTokens ?? 0;
   const cacheWriteValue = cacheWriteTokens ?? 0;
