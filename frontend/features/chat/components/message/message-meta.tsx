@@ -262,7 +262,6 @@ function MetaIconButton({
 
 export function UserMessageMeta({
   item,
-  busy,
   showRetry,
   onCycleBranch,
   onRetry,
@@ -274,7 +273,6 @@ export function UserMessageMeta({
   showBranchNavigator = true,
 }: {
   item: ChatMetaMessage;
-  busy: boolean;
   showRetry: boolean;
   onCycleBranch: (parentPublicID: string | null, direction: "previous" | "next") => void;
   onRetry: () => void;
@@ -289,7 +287,8 @@ export function UserMessageMeta({
   const timeT = useTranslations("common.time");
   const timestamp = formatMessageTimestamp(item.createdAt, (key, values) => timeT(key, values));
   const hasPersistedMessage = Boolean(resolvePersistedPublicID(item.publicID));
-  const canShowBranchNavigator = Boolean(showBranchNavigator && item.branchNavigator && !busy && !item.isPending);
+  const messagePending = Boolean(item.isPending || item.status?.trim().toLowerCase() === "pending");
+  const canShowBranchNavigator = Boolean(showBranchNavigator && item.branchNavigator);
 
   return (
     <MetaContainer align="end" alwaysVisible={alwaysVisible}>
@@ -299,7 +298,7 @@ export function UserMessageMeta({
           {showRetry && hasPersistedMessage ? (
             <MetaIconButton
               label={t("retryMessage")}
-              disabled={item.isPending}
+              disabled={messagePending}
               onClick={onRetry}
             >
               <RotateCcw size={14} strokeWidth={1.8} animateOnHover="default" />
@@ -307,14 +306,14 @@ export function UserMessageMeta({
           ) : null}
           <MetaIconButton
             label={t("editMessage")}
-            disabled={item.isPending || !hasPersistedMessage}
+            disabled={messagePending || !hasPersistedMessage}
             onClick={onEdit}
           >
             <Brush size={14} strokeWidth={1.8} animateOnHover="default" />
           </MetaIconButton>
           <MetaIconButton
             label={t("copyMessage")}
-            disabled={item.isPending}
+            disabled={messagePending}
             onClick={onCopy}
           >
             {copySucceeded ? (
@@ -1003,10 +1002,12 @@ export function AssistantMessageMeta({
     isLive ? item.createdAt : item.updatedAt || item.createdAt,
     (key, values) => timeT(key, values),
   );
-  const canRetry = !readOnly && !busy && !isLive;
-  const canEdit = Boolean(canRetry && onEdit && resolvePersistedPublicID(item.publicID));
-  const canContinue = Boolean(canRetry && resolvePersistedPublicID(item.publicID) && item.status === "interrupted");
-  const canShowBranchNavigator = Boolean(showBranchNavigator && item.branchNavigator && !busy && !isLive);
+  const messagePending = Boolean(isLive || item.status?.trim().toLowerCase() === "pending");
+  const hasPersistedMessage = Boolean(resolvePersistedPublicID(item.publicID));
+  const canRetry = !readOnly && !messagePending && hasPersistedMessage;
+  const canEdit = Boolean(canRetry && !busy && onEdit);
+  const canContinue = Boolean(canRetry && !busy && item.status === "interrupted");
+  const canShowBranchNavigator = Boolean(showBranchNavigator && item.branchNavigator);
   const hasTokenUsage = Boolean(
     (item.inputTokens ?? 0) > 0 ||
     (item.outputTokens ?? 0) > 0 ||
@@ -1086,7 +1087,7 @@ export function AssistantMessageMeta({
                     <MetaIconButton
                       label={t("likeReply")}
                       className={reaction === "up" ? "text-foreground" : undefined}
-                      disabled={isLive}
+                      disabled={messagePending}
                       onClick={() => onReact(reaction === "up" ? null : "up")}
                     >
                       <ThumbsUp size={14} strokeWidth={1.8} animateOnHover="default" />
@@ -1094,7 +1095,7 @@ export function AssistantMessageMeta({
                     <MetaIconButton
                       label={t("dislikeReply")}
                       className={reaction === "down" ? "text-foreground" : undefined}
-                      disabled={isLive}
+                      disabled={messagePending}
                       onClick={() => onReact(reaction === "down" ? null : "down")}
                     >
                       <ThumbsDown size={14} strokeWidth={1.8} animateOnHover="default" />
@@ -1117,7 +1118,7 @@ export function AssistantMessageMeta({
                     <Forward className="size-3.5" strokeWidth={1.8} />
                   </MetaIconButton>
                 ) : null}
-                <QuickMemoryPin disabled={isLive} />
+                <QuickMemoryPin disabled={messagePending} />
               </>
             ) : null}
             {canShowBranchNavigator ? <BranchSwitcher item={item} onCycle={onCycleBranch} /> : null}

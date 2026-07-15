@@ -6625,6 +6625,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/branding": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "settings"
+                ],
+                "summary": "查询公开品牌配置",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_settings.BrandingResponseDoc"
+                        }
+                    }
+                }
+            }
+        },
+        "/branding/manifest.webmanifest": {
+            "get": {
+                "produces": [
+                    "application/manifest+json"
+                ],
+                "tags": [
+                    "settings"
+                ],
+                "summary": "查询品牌 Web App Manifest",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_settings.BrandingManifestResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/context-artifacts/{id}": {
             "get": {
                 "security": [
@@ -9770,6 +9808,16 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "按技能 ID 筛选，可重复传递",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "页码",
                         "name": "page",
@@ -9787,6 +9835,12 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/internal_transport_http_skill.SkillSummaryPageResponseDoc"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_transport_http_skill.ErrorDoc"
                         }
                     },
                     "500": {
@@ -10436,7 +10490,16 @@ const docTemplate = `{
                 "phase": {
                     "type": "string"
                 },
+                "platformModelName": {
+                    "type": "string"
+                },
+                "providerProtocol": {
+                    "type": "string"
+                },
                 "roundID": {
+                    "type": "string"
+                },
+                "routedBindingCode": {
                     "type": "string"
                 },
                 "runID": {
@@ -10467,6 +10530,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                },
+                "upstreamModelName": {
+                    "type": "string"
+                },
+                "upstreamName": {
                     "type": "string"
                 },
                 "userDisplayName": {
@@ -16001,10 +16070,25 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "defaultMCPToolIDs": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "defaultSkillIDs": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "description": {
                     "type": "string"
                 },
                 "icon": {
+                    "type": "string"
+                },
+                "mcpDefaultMode": {
                     "type": "string"
                 },
                 "name": {
@@ -16195,6 +16279,20 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 32
                 },
+                "defaultMCPToolIDs": {
+                    "type": "array",
+                    "maxItems": 128,
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "defaultSkillIDs": {
+                    "type": "array",
+                    "maxItems": 128,
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "description": {
                     "type": "string",
                     "maxLength": 255
@@ -16202,6 +16300,13 @@ const docTemplate = `{
                 "icon": {
                     "type": "string",
                     "maxLength": 32
+                },
+                "mcpDefaultMode": {
+                    "type": "string",
+                    "enum": [
+                        "inherit",
+                        "custom"
+                    ]
                 },
                 "name": {
                     "type": "string",
@@ -17263,6 +17368,20 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 32
                 },
+                "defaultMCPToolIDs": {
+                    "type": "array",
+                    "maxItems": 128,
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "defaultSkillIDs": {
+                    "type": "array",
+                    "maxItems": 128,
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "description": {
                     "type": "string",
                     "maxLength": 255
@@ -17270,6 +17389,13 @@ const docTemplate = `{
                 "icon": {
                     "type": "string",
                     "maxLength": 32
+                },
+                "mcpDefaultMode": {
+                    "type": "string",
+                    "enum": [
+                        "inherit",
+                        "custom"
+                    ]
                 },
                 "name": {
                     "type": "string",
@@ -17593,6 +17719,116 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_transport_http_settings.BrandingManifestIcon": {
+            "type": "object",
+            "properties": {
+                "purpose": {
+                    "type": "string"
+                },
+                "sizes": {
+                    "type": "string"
+                },
+                "src": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_transport_http_settings.BrandingManifestResponse": {
+            "type": "object",
+            "properties": {
+                "background_color": {
+                    "type": "string"
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display": {
+                    "type": "string"
+                },
+                "icons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_transport_http_settings.BrandingManifestIcon"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orientation": {
+                    "type": "string"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "short_name": {
+                    "type": "string"
+                },
+                "start_url": {
+                    "type": "string"
+                },
+                "theme_color": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_transport_http_settings.BrandingResponse": {
+            "type": "object",
+            "properties": {
+                "appleTouchIcon180URL": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "faviconURL": {
+                    "type": "string"
+                },
+                "logoURL": {
+                    "type": "string"
+                },
+                "pwaIcon192URL": {
+                    "type": "string"
+                },
+                "pwaIcon512URL": {
+                    "type": "string"
+                },
+                "pwaMaskableIcon512URL": {
+                    "type": "string"
+                },
+                "shortName": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_transport_http_settings.BrandingResponseDoc": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/internal_transport_http_settings.BrandingResponse"
+                },
+                "errorMsg": {
+                    "type": "string"
+                }
+            }
+        },
         "internal_transport_http_settings.PatchItem": {
             "type": "object",
             "required": [
@@ -17899,7 +18135,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.3.1",
+	Version:          "0.3.2",
 	Host:             "",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
