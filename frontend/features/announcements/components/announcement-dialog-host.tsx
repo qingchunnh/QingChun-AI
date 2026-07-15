@@ -345,10 +345,9 @@ export function AnnouncementDialogHost() {
                   className={cn(
                     "relative min-w-36 rounded-md py-1 pl-3.5 pr-8 text-left text-xs transition-colors before:absolute before:left-1.5 before:top-2 before:bottom-2 before:w-0.5 before:rounded-full md:h-[3.125rem] md:w-full",
                     announcementTypeAccentClassName(item.type),
-                    isAnnouncementRead(item) && "opacity-55",
                     index === renderActiveIndex
-                      ? "bg-foreground/10 text-pure-foreground"
-                      : "text-foreground/70 hover:bg-muted/60 hover:text-foreground",
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                   )}
                   onClick={() => setActiveIndex(index)}
                 >
@@ -356,7 +355,7 @@ export function AnnouncementDialogHost() {
                     {!isAnnouncementRead(item) ? <span aria-hidden="true" className="size-1.5 rounded-full bg-red-500" /> : null}
                     {item.pinned ? <Pin className="size-3 text-muted-foreground/70" /> : null}
                   </span>
-                  <span className={cn("block truncate", index === renderActiveIndex ? "font-semibold text-pure-foreground" : "font-medium")}>{item.title}</span>
+                  <span className="block truncate font-medium">{item.title}</span>
                   <span className="mt-0.5 block text-xs text-muted-foreground">
                     {formatAnnouncementDate(item.updatedAt, locale)}
                   </span>
