@@ -12,6 +12,7 @@ export function SettingsAbout() {
       title={t("title")}
       description={t("description")}
       consoleLabel={t("userConsole")}
+      motto={t("motto")}
       labels={{
         details: t("details"),
         official: t("official"),

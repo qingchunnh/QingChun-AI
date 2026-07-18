@@ -35,6 +35,7 @@ type AboutSettingsContentProps = {
   description: string;
   consoleLabel: string;
   labels: AboutLabels;
+  motto?: string;
   versionBadgeContent?: ReactNode;
   versionBadgeTooltip?: ReactNode;
   versionActions?: ReactNode;
@@ -90,6 +91,7 @@ export function AboutSettingsContent({
   description,
   consoleLabel,
   labels,
+  motto,
   versionBadgeContent,
   versionBadgeTooltip,
   versionActions,
@@ -158,6 +160,12 @@ export function AboutSettingsContent({
               {versionActions ? <span className="ml-1.5 flex min-w-0 items-center gap-2">{versionActions}</span> : null}
             </div>
           </div>
+
+          {motto ? (
+            <p className="about-motto-rainbow max-w-[760px] border-l-2 border-border/70 pl-3 text-sm leading-6 [font-family:var(--font-economist)]">
+              {motto}
+            </p>
+          ) : null}
 
           <p className="max-w-[760px] text-sm leading-6 text-muted-foreground">
             {description}

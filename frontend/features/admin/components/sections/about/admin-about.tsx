@@ -208,6 +208,7 @@ export function AdminAboutPage() {
       title={t("title")}
       description={t("description")}
       consoleLabel={t("adminConsole")}
+      motto={t("motto")}
       versionBadgeContent={<AdminAboutVersionBadge updateRelease={updateRelease} />}
       versionBadgeTooltip={<AdminUpdateTooltipContent updateRelease={updateRelease} />}
       versionActions={<AdminUpdateCheck />}

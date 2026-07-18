@@ -1267,6 +1267,38 @@ html[data-branding-pending] body {
     --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
   }
 
+  .about-motto-rainbow {
+    background-image: linear-gradient(
+      90deg,
+      #ef4444d9 0%,
+      #f97316d9 14.3%,
+      #eab308d9 28.6%,
+      #22c55ed9 42.9%,
+      #06b6d4d9 57.1%,
+      #3b82f6d9 71.4%,
+      #a855f7d9 85.7%,
+      #ef4444d9 100%
+    );
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: about-motto-rainbow-flow 8s linear infinite;
+  }
+
+  @keyframes about-motto-rainbow-flow {
+    to {
+      background-position: 200% 50%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-motto-rainbow {
+      animation: none;
+    }
+  }
+
   .brand-wordmark {
     font-family: var(--font-economist);
     font-weight: var(--brand-wordmark-wght, 560);
