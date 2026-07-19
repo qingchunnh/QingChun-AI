@@ -1289,7 +1289,7 @@ html[data-branding-pending] body {
 
   @keyframes about-motto-rainbow-flow {
     to {
-      background-position: 200% 50%;
+      background-position: -200% 50%;
     }
   }
 
