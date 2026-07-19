@@ -342,12 +342,13 @@ export function AnnouncementDialogHost() {
                 <button
                   key={`${item.id}:${item.updatedAt}`}
                   type="button"
+                  aria-current={index === renderActiveIndex ? "true" : undefined}
                   className={cn(
-                    "relative min-w-36 rounded-md py-1 pl-3.5 pr-8 text-left text-xs transition-colors before:absolute before:left-1.5 before:top-2 before:bottom-2 before:w-0.5 before:rounded-full md:h-[3.125rem] md:w-full",
+                    "relative min-w-36 rounded-md py-1 pl-3.5 pr-8 text-left text-xs transition-colors outline-hidden ring-sidebar-ring focus-visible:ring-2 before:absolute before:left-1.5 before:top-2 before:bottom-2 before:w-0.5 before:rounded-full before:transition-opacity md:h-[3.125rem] md:w-full [--announcement-state-bg:color-mix(in_oklch,var(--sidebar-accent),var(--sidebar-foreground)_1%)]",
                     announcementTypeAccentClassName(item.type),
                     index === renderActiveIndex
-                      ? "bg-muted text-foreground"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                      ? "bg-[var(--announcement-state-bg)] text-sidebar-accent-foreground before:opacity-100"
+                      : "text-muted-foreground before:opacity-70 hover:bg-[var(--announcement-state-bg)] hover:text-sidebar-accent-foreground",
                   )}
                   onClick={() => setActiveIndex(index)}
                 >
