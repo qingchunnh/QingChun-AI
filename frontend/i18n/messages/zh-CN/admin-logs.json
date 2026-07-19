@@ -133,6 +133,7 @@
       "stream_message": "发送消息",
       "create_conversation": "创建对话",
       "rename_conversation": "重命名对话",
+      "update_conversation_labels": "更新对话标签",
       "export_conversation": "导出对话",
       "delete_conversation": "删除对话",
       "set_conversation_star": "收藏对话",

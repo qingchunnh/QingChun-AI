@@ -344,12 +344,14 @@
   },
   "chatPage": {
     "defaultModel": {
-      "sectionTitle": "Default model",
+      "sectionTitle": "Conversation basics",
       "title": "Default model for new chats",
       "description": "The model preselected for new chats. Leave empty to use the first available system-recommended model.",
       "systemRecommended": "System default",
       "autoTitle": "Auto-generate titles",
-      "autoTitleDescription": "When disabled, new chats use the first 40 characters of the first message as the title."
+      "autoTitleDescription": "When disabled, new chats use the first 40 characters of the first message as the title.",
+      "autoLabels": "Auto-generate labels",
+      "autoLabelsDescription": "When disabled, conversation labels are no longer generated automatically, reducing auxiliary model calls and their associated token usage."
     },
     "input": {
       "sectionTitle": "Input and sending",
@@ -508,6 +510,7 @@
       "monthly": "Monthly",
       "dailyUsage": "Daily usage",
       "monthlyUsage": "Monthly usage",
+      "otherModels": "Other",
       "empty": "No usage data.",
       "metrics": {
         "totalCost": "Total cost",
@@ -517,7 +520,8 @@
       },
       "tooltip": {
         "cost": "Cost",
-        "calls": "Calls"
+        "calls": "Calls",
+        "latency": "Average latency"
       }
     },
     "usageLog": {

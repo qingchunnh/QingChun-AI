@@ -1,3 +1,5 @@
+import Script from "next/script";
+
 const BANNER = String.raw`
    ___  ___ _   _  ____  ____ _   _ _   _ _   _        _    ___ 
   / _ \|_ _| \ | |/ ___|/ ___| | | | | | | \ | |      / \  |_ _|
@@ -30,9 +32,8 @@ const BANNER_SCRIPT = `
 
 export function DevtoolsBrandBanner() {
   return (
-    <script
-      id="qingchunai-devtools-brand"
-      dangerouslySetInnerHTML={{ __html: BANNER_SCRIPT }}
-    />
+    <Script id="qingchunai-devtools-brand" strategy="afterInteractive">
+      {BANNER_SCRIPT}
+    </Script>
   );
 }
