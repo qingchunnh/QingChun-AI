@@ -12860,7 +12860,6 @@ const docTemplate = `{
                 "id",
                 "lang",
                 "name",
-                "orientation",
                 "scope",
                 "short_name",
                 "start_url",
@@ -12895,9 +12894,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "orientation": {
                     "type": "string"
                 },
                 "scope": {
