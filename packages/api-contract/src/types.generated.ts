@@ -493,6 +493,7 @@ export interface BrandingManifestResponse {
   id: string;
   lang: string;
   name: string;
+  orientation: string;
   scope: string;
   short_name: string;
   start_url: string;
