@@ -1,0 +1,74 @@
+app:
+  name: QingChun AI
+  env: prod
+
+server:
+  http_port: "8080"
+  cors_allow_origin: "http://localhost:8080,http://127.0.0.1:8080,http://QingChunAI-ServerIP:8080,https://QingChunAI-URL"
+  trusted_proxies: "127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,::1/128,fc00::/7"
+  public_api_base_url: "https://QingChunAI-URL"
+  public_web_base_url: "https://QingChunAI-URL"
+  frontend_dist_dir: "/app/frontend/out"
+  read_header_timeout_seconds: 10
+  read_timeout_seconds: 120
+  idle_timeout_seconds: 120
+  max_header_bytes: 1048576
+
+security:
+  jwt_secret: "64位随机字符"
+  data_encryption_key: "64位随机字符"
+  ssrf_protection_enabled: true
+  turnstile_siteverify_url: "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+
+branding:
+  title: 青春AI
+  short_name: 青春AI
+  description: 青春AI 是一个多模型 AI 对话系统。
+  logo_url: ""
+  favicon_url: /favicon.ico
+  pwa_icon_192_url: /pwa/icon-192.png
+  pwa_icon_512_url: /pwa/icon-512.png
+  pwa_maskable_icon_512_url: /pwa/icon-maskable-512.png
+  apple_touch_icon_180_url: /pwa/apple-touch-icon.png
+
+database:
+  driver: postgres
+  postgres:
+    dsn: "postgresql://user:password@host:port/dbname"
+    max_open_conns: 30
+    max_idle_conns: 10
+    conn_max_lifetime_minutes: 60
+    conn_max_idle_time_minutes: 10
+  redis:
+    addr: "redis:6379"
+    username: ""
+    password: ""
+    db: 0
+    tls_enabled: false
+    tls_insecure_skip_verify: false
+
+cache:
+  driver: redis
+
+storage:
+  backend: local
+  local:
+    root_dir: /app/storage
+  s3:
+    endpoint: ""
+    region: auto
+    bucket: ""
+    prefix: ""
+    access_key_id: ""
+    secret_access_key: ""
+    force_path_style: true
+
+geoip:
+  provider: ipwhois
+
+observability:
+  tracing:
+    endpoint: ""
+    headers: ""
+    insecure: false
+    sampling_rate: 1

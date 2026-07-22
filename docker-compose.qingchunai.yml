@@ -1,0 +1,22 @@
+services:
+  qingchun-ai:
+    image: ghcr.io/qingchunnh/qingchun-ai:dev
+    container_name: qingchun-ai
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./storage:/app/storage
+      - ./data:/app/data
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - 'TZ=Asia/Shanghai'
+      - 'POSTGRES_DSN=postgresql://user:password@host:port/dbname'
+      - 'REDIS_ADDR=redis:6379'
+      # - 'REDIS_PASSWORD='
+    networks:
+      - qingchun-network
+
+networks:
+  qingchun-network:
+    external: true
