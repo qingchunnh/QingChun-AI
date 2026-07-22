@@ -75,6 +75,22 @@ func TestReuseModelOptionsSettingIsAllowed(t *testing.T) {
 	}
 }
 
+func TestKeepLastUsedModelSettingIsAllowed(t *testing.T) {
+	t.Parallel()
+
+	if got := allowedKeys["chat.keep_last_used_model"]; got != "false" {
+		t.Fatalf("expected chat.keep_last_used_model default to be false, got %q", got)
+	}
+	for _, value := range []string{"true", "false"} {
+		if err := validateValue("chat.keep_last_used_model", value); err != nil {
+			t.Fatalf("expected chat.keep_last_used_model=%s to be accepted, got %v", value, err)
+		}
+	}
+	if err := validateValue("chat.keep_last_used_model", "yes"); err == nil {
+		t.Fatal("expected invalid chat.keep_last_used_model to be rejected")
+	}
+}
+
 func TestReasoningContentPassbackSettingIsAllowed(t *testing.T) {
 	t.Parallel()
 

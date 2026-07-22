@@ -348,6 +348,8 @@
       "title": "Default model for new chats",
       "description": "The model preselected for new chats. Leave empty to use the first available system-recommended model.",
       "systemRecommended": "System default",
+      "keepLastUsedModel": "Keep last used model",
+      "keepLastUsedModelDescription": "When enabled, new chats reuse the model used last time. Falls back to the default model for new chats when it is unavailable or no model has been used yet.",
       "autoTitle": "Auto-generate titles",
       "autoTitleDescription": "When disabled, new chats use the first 40 characters of the first message as the title.",
       "autoLabels": "Auto-generate labels",

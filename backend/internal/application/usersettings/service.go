@@ -28,6 +28,7 @@ var allowedKeys = map[string]string{
 	"chat.show_latency":                         "true",
 	"chat.show_billing_cost":                    "true",
 	"chat.default_model":                        "",
+	"chat.keep_last_used_model":                 "false",
 	"chat.auto_generate_title":                  "true",
 	"chat.auto_generate_labels":                 "true",
 	"chat.delete_conversation_files_by_default": "false",
@@ -44,6 +45,7 @@ var allowedKeys = map[string]string{
 
 // boolKeys 取值只能是 "true" / "false"。
 var boolKeys = map[string]bool{
+	"chat.keep_last_used_model":                 true,
 	"chat.show_token_usage":                     true,
 	"chat.show_model_info":                      true,
 	"chat.show_latency":                         true,

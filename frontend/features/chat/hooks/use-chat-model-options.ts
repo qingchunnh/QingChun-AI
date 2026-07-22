@@ -11,6 +11,7 @@ import type {
 import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
 import { parseProtocolsJSON } from "@/shared/lib/model-protocols";
 import { sanitizeConversationOptions } from "@/features/chat/model/conversation-options";
+import { readLastUsedModel, writeLastUsedModel } from "@/features/chat/model/last-used-model";
 import {
   DEFAULT_CHAT_CONTENT_WIDTH,
   parseChatContentWidth,
@@ -335,6 +336,7 @@ export function useChatModelOptions({
   const [modelsErrorMsg, setModelsErrorMsg] = React.useState("");
   const [selectedPlatformModelName, setSelectedPlatformModelName] = React.useState("");
   const [userDefaultModel, setUserDefaultModel] = React.useState("");
+  const [keepLastUsedModel, setKeepLastUsedModel] = React.useState(false);
   const [sendShortcut, setSendShortcut] = React.useState<SendShortcut>("enter");
   const [restoreDraftOnFailure, setRestoreDraftOnFailure] = React.useState(true);
   const [preserveConversationDrafts, setPreserveConversationDrafts] = React.useState(true);
@@ -356,6 +358,7 @@ export function useChatModelOptions({
 
   const selectPlatformModelName = React.useCallback((platformModelName: string) => {
     userSelectedModelRef.current = true;
+    writeLastUsedModel(platformModelName);
     setSelectedPlatformModelName(platformModelName);
   }, []);
 
@@ -433,6 +436,7 @@ export function useChatModelOptions({
         applyModelCatalog(catalog);
         setMCPMaxSelectedTools(resolveMCPMaxSelectedTools(nextMCPPolicy?.maxSelectedToolsPerMessage));
         setUserDefaultModel(settings["chat.default_model"]?.trim() ?? "");
+        setKeepLastUsedModel(settings["chat.keep_last_used_model"] === "true");
         setSendShortcut(parseSendShortcut(settings["chat.send_on_enter"]));
         setRestoreDraftOnFailure(settings["chat.restore_draft_on_failure"] !== "false");
         setPreserveConversationDrafts(settings["chat.preserve_conversation_drafts"] !== "false");
@@ -540,6 +544,13 @@ export function useChatModelOptions({
       if (!token || cancelled || userSelectedModelRef.current) {
         return;
       }
+      if (keepLastUsedModel) {
+        const lastUsedModel = readLastUsedModel();
+        if (lastUsedModel && availableModels.some((item) => item.platformModelName === lastUsedModel)) {
+          setSelectedPlatformModelName(lastUsedModel);
+          return;
+        }
+      }
       const result = await resolveConversationDefaultModel({
         accessToken: token,
         availableModels,
@@ -558,7 +569,7 @@ export function useChatModelOptions({
     return () => {
       cancelled = true;
     };
-  }, [availableModels, conversationPublicID, resetToken, userDefaultModel]);
+  }, [availableModels, conversationPublicID, resetToken, userDefaultModel, keepLastUsedModel]);
 
   const modelOptions = React.useMemo<ChatModelOption[]>(
     () =>

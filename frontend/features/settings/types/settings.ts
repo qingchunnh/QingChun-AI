@@ -9,6 +9,7 @@ export type FileMode = "auto" | "full_context" | "rag";
 export type ChatInputHeight = "compact" | "standard" | "loose";
 export type ChatSettings = {
   defaultModel: string;
+  keepLastUsedModel: boolean;
   sendShortcut: SendShortcut;
   showTokenUsage: boolean;
   showModelInfo: boolean;

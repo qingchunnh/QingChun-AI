@@ -34,6 +34,7 @@ import {
   toBranchKey,
 } from "@/features/chat/model/chat-thread";
 import { sanitizeConversationOptions } from "@/features/chat/model/conversation-options";
+import { writeLastUsedModel } from "@/features/chat/model/last-used-model";
 import { buildMediaImagePreviewMarkdown } from "@/features/chat/model/media-image-preview";
 import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
 import { notifyResponseCompletion } from "@/shared/lib/browser-notifications";
@@ -615,6 +616,7 @@ export function useChatMessageSubmit({
         toast.error(t("noModel"), { description: t("selectModelFirst") });
         return false;
       }
+      writeLastUsedModel(requestPlatformModelName);
 
       const wasConversationMode = showConversationLayout || visibleMessageCount > 0;
       const clientRunID = createClientRunID();

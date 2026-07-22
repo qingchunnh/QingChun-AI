@@ -501,6 +501,17 @@ export function SettingsChat() {
           </SettingsFieldRow>
           <div className="space-y-4 pt-4">
             <SettingsFieldRow
+              title={t("defaultModel.keepLastUsedModel")}
+              description={t("defaultModel.keepLastUsedModelDescription")}
+            >
+              <Switch
+                checked={settings.keepLastUsedModel}
+                onCheckedChange={handleBool("chat.keep_last_used_model", "keepLastUsedModel")}
+                disabled={loading}
+                aria-label={t("defaultModel.keepLastUsedModel")}
+              />
+            </SettingsFieldRow>
+            <SettingsFieldRow
               title={t("defaultModel.autoTitle")}
               description={t("defaultModel.autoTitleDescription")}
             >
