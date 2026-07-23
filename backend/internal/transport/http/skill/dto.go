@@ -50,7 +50,7 @@ type WriteSkillRequest struct {
 	Title       string `json:"title" binding:"required,max=64"`
 	Trigger     string `json:"trigger" binding:"required,max=64"`
 	Description string `json:"description,omitempty" binding:"max=256"`
-	Markdown    string `json:"markdown" binding:"required,max=10000"`
+	Markdown    string `json:"markdown" binding:"required,max=50000"`
 	Enabled     bool   `json:"enabled,omitempty"`
 	SortOrder   int    `json:"sortOrder,omitempty"`
 }
@@ -60,7 +60,7 @@ type PatchSkillRequest struct {
 	Title       *string `json:"title,omitempty" binding:"omitempty,max=64"`
 	Trigger     *string `json:"trigger,omitempty" binding:"omitempty,max=64"`
 	Description *string `json:"description,omitempty" binding:"omitempty,max=256"`
-	Markdown    *string `json:"markdown,omitempty" binding:"omitempty,max=10000"`
+	Markdown    *string `json:"markdown,omitempty" binding:"omitempty,max=50000"`
 	Enabled     *bool   `json:"enabled,omitempty"`
 	SortOrder   *int    `json:"sortOrder,omitempty"`
 }

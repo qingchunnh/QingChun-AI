@@ -51,7 +51,7 @@
   "skillsEmptyDescription": "创建后，在对话输入 / 即可按需装载为上下文。",
   "skillsNoResults": "没有匹配的 Skills",
   "skillInvalid": "请填写名称和 SKILL.md。",
-  "skillTooLong": "名称最多 64 个字符，说明最多 256 个字符，SKILL.md 最多 10000 个字符。",
+  "skillTooLong": "名称最多 64 个字符，说明最多 256 个字符，SKILL.md 最多 50000 个字符。",
   "skillMarkdown": "SKILL.md",
   "skillsLoadFailed": "Skills 加载失败",
   "skillCreated": "Skill 已创建",

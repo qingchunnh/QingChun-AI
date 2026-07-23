@@ -4371,7 +4371,7 @@ definitions:
       enabled:
         type: boolean
       markdown:
-        maxLength: 10000
+        maxLength: 50000
         type: string
       sortOrder:
         type: integer
@@ -7853,7 +7853,7 @@ definitions:
       enabled:
         type: boolean
       markdown:
-        maxLength: 10000
+        maxLength: 50000
         type: string
       sortOrder:
         type: integer

@@ -13,7 +13,7 @@ const (
 	maxSkillTitleLength       = 64
 	maxSkillTriggerLength     = 64
 	maxSkillDescriptionLength = 256
-	maxSkillMarkdownLength    = 10000
+	maxSkillMarkdownLength    = 50000
 )
 
 // Service 封装技能业务逻辑。

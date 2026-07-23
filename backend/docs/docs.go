@@ -17465,7 +17465,7 @@ const docTemplate = `{
                 },
                 "markdown": {
                     "type": "string",
-                    "maxLength": 10000
+                    "maxLength": 50000
                 },
                 "sortOrder": {
                     "type": "integer"
@@ -22402,7 +22402,7 @@ const docTemplate = `{
                 },
                 "markdown": {
                     "type": "string",
-                    "maxLength": 10000
+                    "maxLength": 50000
                 },
                 "sortOrder": {
                     "type": "integer"

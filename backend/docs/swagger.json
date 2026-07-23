@@ -17458,7 +17458,7 @@
                 },
                 "markdown": {
                     "type": "string",
-                    "maxLength": 10000
+                    "maxLength": 50000
                 },
                 "sortOrder": {
                     "type": "integer"
@@ -22395,7 +22395,7 @@
                 },
                 "markdown": {
                     "type": "string",
-                    "maxLength": 10000
+                    "maxLength": 50000
                 },
                 "sortOrder": {
                     "type": "integer"

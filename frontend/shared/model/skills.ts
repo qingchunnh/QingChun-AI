@@ -3,7 +3,7 @@ import type { SkillDTO, WriteSkillRequest } from "@/shared/api/skills.types";
 export const SKILL_LIMITS = {
   name: 64,
   description: 256,
-  markdown: 10000,
+  markdown: 50000,
 } as const;
 
 export type SkillFormValue = {

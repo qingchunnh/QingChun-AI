@@ -1921,7 +1921,7 @@ export interface PatchSkillRequest {
   /** @maxLength 256 */
   description?: string;
   enabled?: boolean;
-  /** @maxLength 10000 */
+  /** @maxLength 50000 */
   markdown?: string;
   sortOrder?: number;
   /** @maxLength 64 */
@@ -3466,7 +3466,7 @@ export interface WriteSkillRequest {
   /** @maxLength 256 */
   description?: string;
   enabled?: boolean;
-  /** @maxLength 10000 */
+  /** @maxLength 50000 */
   markdown: string;
   sortOrder?: number;
   /** @maxLength 64 */
