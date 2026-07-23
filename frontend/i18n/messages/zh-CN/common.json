@@ -79,7 +79,9 @@
     "fallbackUser": "用户",
     "today": "今天",
     "archived": "已归档",
-    "yesterday": "昨天"
+    "yesterday": "昨天",
+    "lastSevenDays": "7 天内",
+    "lastThirtyDays": "30 天内"
   },
   "time": {
     "todayTime": "{time}",

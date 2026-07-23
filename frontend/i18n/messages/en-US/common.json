@@ -79,7 +79,9 @@
     "fallbackUser": "User",
     "today": "Today",
     "archived": "Archived",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "lastSevenDays": "Last 7 days",
+    "lastThirtyDays": "Last 30 days"
   },
   "time": {
     "todayTime": "{time}",

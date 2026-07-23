@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Archive, ArrowDown, ArrowUp, Folder, Maximize2, Minimize2 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { ArrowRight } from "@/components/animate-ui/icons/arrow-right";
 import { MessageCircleMore } from "@/components/animate-ui/icons/message-circle-more";
@@ -260,7 +260,6 @@ export function NavigationSearch({
   onSelect: (href: string) => void;
 }) {
   const [hasMounted, setHasMounted] = React.useState(false);
-  const locale = useLocale();
   const navigationT = useTranslations("common.navigation");
   const actionsT = useTranslations("common.actions");
   const isMobile = useIsMobile();
@@ -275,10 +274,12 @@ export function NavigationSearch({
   const [previewPublicID, setPreviewPublicID] = React.useState("");
   const resultGroups = React.useMemo(
     () => groupConversationSearchResultsByDate(results, {
-      locale,
       todayLabel: navigationT("today"),
+      yesterdayLabel: navigationT("yesterday"),
+      lastSevenDaysLabel: navigationT("lastSevenDays"),
+      lastThirtyDaysLabel: navigationT("lastThirtyDays"),
     }),
-    [locale, navigationT, results],
+    [navigationT, results],
   );
   const loadMoreRef = useLoadMoreSentinel<HTMLDivElement>({
     enabled: open && hasMore && !loading && !loadingMore && !loadMoreFailed,

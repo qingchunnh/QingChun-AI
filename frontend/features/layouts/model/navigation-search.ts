@@ -47,28 +47,41 @@ export function filterConversationSearchResults(
     });
 }
 
-function isSameCalendarDay(left: Date, right: Date) {
-  return (
-    left.getFullYear() === right.getFullYear() &&
-    left.getMonth() === right.getMonth() &&
-    left.getDate() === right.getDate()
-  );
+function startOfDay(date: Date): Date {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function formatMonthKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
 }
 
 export function groupConversationSearchResultsByDate(
   items: readonly ConversationSearchResult[],
   {
-    locale,
     todayLabel,
+    yesterdayLabel,
+    lastSevenDaysLabel,
+    lastThirtyDaysLabel,
   }: {
-    locale: string;
     todayLabel: string;
+    yesterdayLabel: string;
+    lastSevenDaysLabel: string;
+    lastThirtyDaysLabel: string;
   },
 ): ConversationSearchResultGroup[] {
   const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentYearFormatter = new Intl.DateTimeFormat(locale, { month: "long" });
-  const otherYearFormatter = new Intl.DateTimeFormat(locale, { year: "numeric", month: "long" });
+  const todayStart = startOfDay(now);
+  const yesterdayStart = new Date(todayStart);
+  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+  const sevenDaysAgo = new Date(todayStart);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const thirtyDaysAgo = new Date(todayStart);
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
   const groups = new Map<
     string,
     ConversationSearchResultGroup & {
@@ -82,16 +95,32 @@ export function groupConversationSearchResultsByDate(
       continue;
     }
 
-    const isToday = isSameCalendarDay(updatedAt, now);
-    const key = isToday
-      ? "today"
-      : `${updatedAt.getFullYear()}-${updatedAt.getMonth()}`;
-    const label = isToday
-      ? todayLabel
-      : (updatedAt.getFullYear() === currentYear ? currentYearFormatter : otherYearFormatter).format(updatedAt);
-    const order = isToday
-      ? Number.MAX_SAFE_INTEGER
-      : updatedAt.getFullYear() * 12 + updatedAt.getMonth();
+    let key: string;
+    let label: string;
+    let order: number;
+
+    if (updatedAt >= todayStart) {
+      key = "today";
+      label = todayLabel;
+      order = Number.MAX_SAFE_INTEGER;
+    } else if (updatedAt >= yesterdayStart) {
+      key = "yesterday";
+      label = yesterdayLabel;
+      order = Number.MAX_SAFE_INTEGER - 1;
+    } else if (updatedAt >= sevenDaysAgo) {
+      key = "last7days";
+      label = lastSevenDaysLabel;
+      order = Number.MAX_SAFE_INTEGER - 2;
+    } else if (updatedAt >= thirtyDaysAgo) {
+      key = "last30days";
+      label = lastThirtyDaysLabel;
+      order = Number.MAX_SAFE_INTEGER - 3;
+    } else {
+      key = formatMonthKey(updatedAt);
+      label = key;
+      order = updatedAt.getFullYear() * 12 + updatedAt.getMonth();
+    }
+
     const group = groups.get(key);
 
     if (group) {
