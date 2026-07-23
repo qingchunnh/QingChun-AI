@@ -4326,7 +4326,7 @@ definitions:
   PatchPromptPresetRequest:
     properties:
       content:
-        maxLength: 10000
+        maxLength: 50000
         type: string
       description:
         maxLength: 256
@@ -7825,7 +7825,7 @@ definitions:
   WritePromptPresetRequest:
     properties:
       content:
-        maxLength: 10000
+        maxLength: 50000
         type: string
       description:
         maxLength: 256

@@ -1892,7 +1892,7 @@ export interface PatchMeResponseDoc {
 }
 
 export interface PatchPromptPresetRequest {
-  /** @maxLength 10000 */
+  /** @maxLength 50000 */
   content?: string;
   /** @maxLength 256 */
   description?: string;
@@ -3450,7 +3450,7 @@ export interface UserSettingsResponseDoc {
 }
 
 export interface WritePromptPresetRequest {
-  /** @maxLength 10000 */
+  /** @maxLength 50000 */
   content: string;
   /** @maxLength 256 */
   description?: string;

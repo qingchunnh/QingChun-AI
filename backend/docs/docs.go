@@ -17402,7 +17402,7 @@ const docTemplate = `{
             "properties": {
                 "content": {
                     "type": "string",
-                    "maxLength": 10000
+                    "maxLength": 50000
                 },
                 "description": {
                     "type": "string",
@@ -22363,7 +22363,7 @@ const docTemplate = `{
             "properties": {
                 "content": {
                     "type": "string",
-                    "maxLength": 10000
+                    "maxLength": 50000
                 },
                 "description": {
                     "type": "string",

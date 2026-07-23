@@ -37,7 +37,7 @@ type WritePromptPresetRequest struct {
 	Title       string `json:"title" binding:"required,max=64"`
 	Trigger     string `json:"trigger" binding:"required,max=64"`
 	Description string `json:"description,omitempty" binding:"max=256"`
-	Content     string `json:"content" binding:"required,max=10000"`
+	Content     string `json:"content" binding:"required,max=50000"`
 	Enabled     bool   `json:"enabled,omitempty"`
 	SortOrder   int    `json:"sortOrder,omitempty"`
 }
@@ -47,7 +47,7 @@ type PatchPromptPresetRequest struct {
 	Title       *string `json:"title,omitempty" binding:"omitempty,max=64"`
 	Trigger     *string `json:"trigger,omitempty" binding:"omitempty,max=64"`
 	Description *string `json:"description,omitempty" binding:"omitempty,max=256"`
-	Content     *string `json:"content,omitempty" binding:"omitempty,max=10000"`
+	Content     *string `json:"content,omitempty" binding:"omitempty,max=50000"`
 	Enabled     *bool   `json:"enabled,omitempty"`
 	SortOrder   *int    `json:"sortOrder,omitempty"`
 }
