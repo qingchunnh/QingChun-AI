@@ -236,7 +236,7 @@ function conversationTitleFromFirstUserMessage(content: string): string {
   if (!value) {
     return "";
   }
-  return Array.from(value).slice(0, 16).join("").trim();
+  return Array.from(value).slice(0, 40).join("").trim();
 }
 
 function hasPendingGeneratedConversationMetadata(
