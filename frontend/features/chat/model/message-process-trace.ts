@@ -6,6 +6,7 @@ export const TRACE_KIND_RAG = "content_retrieval";
 export const TRACE_KIND_FILE_CONTEXT = "file_context";
 export const TRACE_KIND_CONTEXT_COMPACTION = "context_compaction";
 export const TRACE_KIND_SKILL_CONTEXT = "skill_context";
+export const TRACE_KIND_REASONING_PASSBACK = "reasoning_passback";
 
 // Legacy persisted traces only. New traces are rendered from payload_json.trace_stages.
 const TRACE_LABEL_UPSTREAM_RESULT = "\u8bf7\u6c42\u7ed3\u679c";
@@ -308,6 +309,11 @@ function structuredCompactionDetails(stage: Record<string, unknown>, labels: Pro
   ];
 }
 
+function structuredReasoningPassbackDetail(stage: Record<string, unknown>, labels: ProcessTraceLabels): string {
+  const messageCount = readNumber(stage.message_count) ?? 0;
+  return labels.reasoningPassback.detail(messageCount);
+}
+
 function structuredTraceStageDetails(stage: Record<string, unknown>, labels: ProcessTraceLabels): string[] {
   switch (readString(stage.kind)) {
     case TRACE_KIND_FILE_CONTEXT:
@@ -316,6 +322,8 @@ function structuredTraceStageDetails(stage: Record<string, unknown>, labels: Pro
       return [structuredRAGDetail(stage, labels)];
     case TRACE_KIND_CONTEXT_COMPACTION:
       return structuredCompactionDetails(stage, labels);
+    case TRACE_KIND_REASONING_PASSBACK:
+      return [structuredReasoningPassbackDetail(stage, labels)];
     default:
       return [];
   }
@@ -557,6 +565,8 @@ export function displayTraceStageLabel(label: string, labels: ProcessTraceLabels
       return labels.stages.contextCompaction;
     case TRACE_KIND_SKILL_CONTEXT:
       return labels.stages.skillContext;
+    case TRACE_KIND_REASONING_PASSBACK:
+      return labels.stages.reasoningPassback;
     case TRACE_LABEL_UPSTREAM_RESULT:
       return labels.stages.requestResult;
     default:

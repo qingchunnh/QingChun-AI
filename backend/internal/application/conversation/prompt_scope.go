@@ -1,6 +1,8 @@
 package conversation
 
 import (
+	"strings"
+
 	appcompact "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/compact"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/llm"
@@ -109,4 +111,15 @@ func historyMessagesFromDomain(messages []model.Message, options historyMessageO
 		historyMsgs = append(historyMsgs, message)
 	}
 	return historyMsgs
+}
+
+// reasoningPassbackMessageCount 统计本次请求实际携带推理内容回传的 assistant 历史消息条数。
+func reasoningPassbackMessageCount(messages []llm.Message) int {
+	count := 0
+	for _, message := range messages {
+		if message.Role == "assistant" && strings.TrimSpace(message.ReasoningContent) != "" {
+			count++
+		}
+	}
+	return count
 }

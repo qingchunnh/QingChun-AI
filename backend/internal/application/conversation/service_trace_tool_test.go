@@ -477,6 +477,27 @@ func TestBuildCompactionProcessTraceUsesReadableLines(t *testing.T) {
 	}
 }
 
+func TestBuildReasoningPassbackProcessTrace(t *testing.T) {
+	summary, markdown, payload := buildReasoningPassbackProcessTrace(3)
+	if summary != "" {
+		t.Fatalf("expected empty summary, got %q", summary)
+	}
+	wantMarkdown := "**推理回传**：已向模型回传 3 条历史推理内容。"
+	if markdown != wantMarkdown {
+		t.Fatalf("unexpected reasoning passback markdown: %q", markdown)
+	}
+	stage, ok := payload[processTracePayloadStage].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected reasoning passback trace stage payload, got %#v", payload)
+	}
+	if stage["kind"] != processTraceKindReasoningPassback || stage["status"] != processTraceStatusCompleted {
+		t.Fatalf("unexpected reasoning passback trace stage: %#v", stage)
+	}
+	if stage["message_count"] != 3 {
+		t.Fatalf("unexpected reasoning passback message count: %#v", stage)
+	}
+}
+
 func TestMergeTracePayloadAppendsProcessTraceStages(t *testing.T) {
 	payload := map[string]interface{}{}
 	mergeTracePayload(payload, map[string]interface{}{

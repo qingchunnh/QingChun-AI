@@ -627,8 +627,12 @@
       "fileContext": "File context",
       "contextCompaction": "Context compaction",
       "skillContext": "Skill context",
+      "reasoningPassback": "Reasoning passback",
       "requestResult": "Request result",
       "upstreamRequestTriggered": "Upstream model request triggered"
+    },
+    "reasoningPassback": {
+      "detail": "Passed back reasoning content from {count, plural, one {# previous turn} other {# previous turns}}"
     },
     "process": {
       "titleActive": "Processing",

@@ -509,6 +509,14 @@ func (s *Service) sendMessageInternal(
 		})
 	}
 
+	// 推理回传提示：统计本轮实际携带历史推理内容的消息条数，仅在条数大于 0 时记录处理过程阶段。
+	if reasoningContentPassback {
+		if passbackCount := reasoningPassbackMessageCount(historyMsgs); passbackCount > 0 {
+			summary, markdown, payload := buildReasoningPassbackProcessTrace(passbackCount)
+			traceRecorder.appendProcessSection(summary, markdown, payload, messageTraceStatusStreaming)
+		}
+	}
+
 	// ContextAssembler 只承载真正的系统级行为指令；资料型上下文稍后进入用户 XML。
 	assembler := NewContextAssembler(int64(cfg.ContextMaxInputTokens))
 	systemPrompt := resolveMessageSystemPromptInjection(cfg, route, conversation.ProjectSystemPrompt, input.HTMLVisualPromptEnabled)

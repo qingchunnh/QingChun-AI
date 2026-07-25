@@ -28,19 +28,20 @@ const (
 )
 
 const (
-	processTracePayloadStage        = "trace_stage"
-	processTracePayloadStages       = "trace_stages"
-	processTraceKindFileContext     = "file_context"
-	processTraceKindRetrieval       = "content_retrieval"
-	processTraceKindCompaction      = "context_compaction"
-	processTraceStatusReady         = "ready"
-	processTraceStatusCompleted     = "completed"
-	processTraceStatusIncomplete    = "incomplete"
-	processTraceStatusEmpty         = "empty"
-	processTraceStatusLowScore      = "low_score"
-	processTraceStatusSkipped       = "skipped"
-	processTraceFallbackFullText    = "full_text"
-	processTraceFallbackUnavailable = "unavailable"
+	processTracePayloadStage          = "trace_stage"
+	processTracePayloadStages         = "trace_stages"
+	processTraceKindFileContext       = "file_context"
+	processTraceKindRetrieval         = "content_retrieval"
+	processTraceKindCompaction        = "context_compaction"
+	processTraceKindReasoningPassback = "reasoning_passback"
+	processTraceStatusReady           = "ready"
+	processTraceStatusCompleted       = "completed"
+	processTraceStatusIncomplete      = "incomplete"
+	processTraceStatusEmpty           = "empty"
+	processTraceStatusLowScore        = "low_score"
+	processTraceStatusSkipped         = "skipped"
+	processTraceFallbackFullText      = "full_text"
+	processTraceFallbackUnavailable   = "unavailable"
 )
 
 const (
@@ -1575,6 +1576,17 @@ func buildRAGProcessTrace(
 			"status":      processTraceStatusCompleted,
 			"file_count":  len(names),
 			"chunk_count": len(chunks),
+		},
+	}
+}
+
+func buildReasoningPassbackProcessTrace(messageCount int) (string, string, map[string]interface{}) {
+	detail := fmt.Sprintf("已向模型回传 %d 条历史推理内容。", messageCount)
+	return "", formatTraceStep("推理回传", detail), map[string]interface{}{
+		processTracePayloadStage: map[string]interface{}{
+			"kind":          processTraceKindReasoningPassback,
+			"status":        processTraceStatusCompleted,
+			"message_count": messageCount,
 		},
 	}
 }

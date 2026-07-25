@@ -5,6 +5,7 @@ import (
 
 	appcompact "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/compact"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/llm"
 )
 
 func TestBuildPromptScopeKeepsFullHistoryWhenDisabled(t *testing.T) {
@@ -105,6 +106,23 @@ func TestHistoryMessagesFromDomainOmitsAssistantReasoningWhenDisabled(t *testing
 	}
 	if got[0].ReasoningContent != "" {
 		t.Fatalf("expected reasoning content to be omitted, got %q", got[0].ReasoningContent)
+	}
+}
+
+func TestReasoningPassbackMessageCount(t *testing.T) {
+	messages := []llm.Message{
+		{Role: "user", Content: "question", ReasoningContent: "ignored"},
+		{Role: "assistant", Content: "answer", ReasoningContent: "thinking"},
+		{Role: "assistant", Content: "empty reasoning", ReasoningContent: "  "},
+		{Role: "assistant", Content: "another answer", ReasoningContent: "more thinking"},
+		{Role: "system", Content: "note", ReasoningContent: "ignored"},
+	}
+
+	if got := reasoningPassbackMessageCount(messages); got != 2 {
+		t.Fatalf("expected 2 passback messages, got %d", got)
+	}
+	if got := reasoningPassbackMessageCount(nil); got != 0 {
+		t.Fatalf("expected 0 passback messages for empty history, got %d", got)
 	}
 }
 

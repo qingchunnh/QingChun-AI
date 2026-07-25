@@ -135,8 +135,12 @@ export type ProcessTraceLabels = {
     fileContext: string;
     contextCompaction: string;
     skillContext: string;
+    reasoningPassback: string;
     requestResult: string;
     upstreamRequestTriggered: string;
+  };
+  reasoningPassback: {
+    detail: (count: number) => string;
   };
   process: {
     titleActive: string;
@@ -288,8 +292,12 @@ export function useProcessTraceLabels(): ProcessTraceLabels {
         fileContext: t("stages.fileContext"),
         contextCompaction: t("stages.contextCompaction"),
         skillContext: t("stages.skillContext"),
+        reasoningPassback: t("stages.reasoningPassback"),
         requestResult: t("stages.requestResult"),
         upstreamRequestTriggered: t("stages.upstreamRequestTriggered"),
+      },
+      reasoningPassback: {
+        detail: (count: number) => t("reasoningPassback.detail", { count }),
       },
       process: {
         titleActive: t("process.titleActive"),

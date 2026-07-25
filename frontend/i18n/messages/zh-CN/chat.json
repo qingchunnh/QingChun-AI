@@ -627,8 +627,12 @@
       "fileContext": "文件上下文",
       "contextCompaction": "上下文压缩",
       "skillContext": "Skill 上下文",
+      "reasoningPassback": "推理回传",
       "requestResult": "请求结果",
       "upstreamRequestTriggered": "上游模型请求触发"
+    },
+    "reasoningPassback": {
+      "detail": "已向模型回传 {count} 条历史推理内容"
     },
     "process": {
       "titleActive": "处理中",
