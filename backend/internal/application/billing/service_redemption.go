@@ -19,8 +19,9 @@ import (
 )
 
 const (
-	defaultRedemptionCodeBytes = 16
-	maxRedemptionCodeQuantity  = 100
+	defaultRedemptionCodeBytes        = 16
+	maxRedemptionCodeQuantity         = 100
+	maxRedemptionCodeGenerateAttempts = 5
 
 	BatchDeleteStatusDeleted  = "deleted"
 	BatchDeleteStatusNotFound = "not_found"
@@ -187,42 +188,8 @@ func (s *Service) CreateRedemptionCodes(ctx context.Context, actorUserID uint, i
 	quantity := normalized.Quantity
 	results := make([]RedemptionCodeView, 0, quantity)
 	for i := 0; i < quantity; i++ {
-		code := normalized.Code
-		if code == "" {
-			code, err = generateRedemptionCode()
-			if err != nil {
-				return nil, err
-			}
-		}
-		codeHash, hashErr := s.redemptionCodeHash(code)
-		if hashErr != nil {
-			return nil, hashErr
-		}
-		codeEncrypted, encryptErr := s.redemptionCodeEncrypted(code)
-		if encryptErr != nil {
-			return nil, encryptErr
-		}
-		item := &domainbilling.RedemptionCode{
-			CodeHash:        codeHash,
-			CodeEncrypted:   codeEncrypted,
-			CodeHint:        redemptionCodeHint(code),
-			Mode:            normalized.Mode,
-			RewardType:      normalized.RewardType,
-			CreditNanousd:   normalized.CreditNanousd,
-			PlanID:          normalized.PlanID,
-			DurationDays:    normalized.DurationDays,
-			MaxRedemptions:  copyIntPointer(normalized.MaxRedemptions),
-			PerUserLimit:    normalized.PerUserLimit,
-			Status:          domainbilling.RedemptionCodeStatusActive,
-			ExpiresAt:       normalized.ExpiresAt,
-			Description:     normalized.Description,
-			CreatedByUserID: actorUserID,
-		}
-		created, createErr := s.repo.CreateRedemptionCode(ctx, item)
+		code, created, createErr := s.createRedemptionCode(ctx, actorUserID, normalized)
 		if createErr != nil {
-			if errors.Is(createErr, repository.ErrDuplicate) {
-				return nil, ErrRedemptionCodeConflict
-			}
 			return nil, createErr
 		}
 		results = append(results, RedemptionCodeView{
@@ -231,6 +198,64 @@ func (s *Service) CreateRedemptionCodes(ctx context.Context, actorUserID uint, i
 		})
 	}
 	return results, nil
+}
+
+// createRedemptionCode 创建单个兑换码；未手动指定明文时随机生成，哈希冲突自动重试。
+func (s *Service) createRedemptionCode(ctx context.Context, actorUserID uint, normalized normalizedRedemptionCodeInput) (string, *domainbilling.RedemptionCode, error) {
+	if normalized.Code != "" {
+		created, err := s.persistRedemptionCode(ctx, actorUserID, normalized, normalized.Code)
+		if err != nil {
+			if errors.Is(err, repository.ErrDuplicate) {
+				return "", nil, ErrRedemptionCodeConflict
+			}
+			return "", nil, err
+		}
+		return normalized.Code, created, nil
+	}
+	// 随机兑换码哈希冲突概率极低，有限次重试避免整批创建失败。
+	for attempt := 0; attempt < maxRedemptionCodeGenerateAttempts; attempt++ {
+		code, err := generateRedemptionCode()
+		if err != nil {
+			return "", nil, err
+		}
+		created, err := s.persistRedemptionCode(ctx, actorUserID, normalized, code)
+		if err == nil {
+			return code, created, nil
+		}
+		if !errors.Is(err, repository.ErrDuplicate) {
+			return "", nil, err
+		}
+	}
+	return "", nil, ErrRedemptionCodeConflict
+}
+
+// persistRedemptionCode 计算兑换码哈希、密文和提示并写入存储。
+func (s *Service) persistRedemptionCode(ctx context.Context, actorUserID uint, normalized normalizedRedemptionCodeInput, code string) (*domainbilling.RedemptionCode, error) {
+	codeHash, err := s.redemptionCodeHash(code)
+	if err != nil {
+		return nil, err
+	}
+	codeEncrypted, err := s.redemptionCodeEncrypted(code)
+	if err != nil {
+		return nil, err
+	}
+	item := &domainbilling.RedemptionCode{
+		CodeHash:        codeHash,
+		CodeEncrypted:   codeEncrypted,
+		CodeHint:        redemptionCodeHint(code),
+		Mode:            normalized.Mode,
+		RewardType:      normalized.RewardType,
+		CreditNanousd:   normalized.CreditNanousd,
+		PlanID:          normalized.PlanID,
+		DurationDays:    normalized.DurationDays,
+		MaxRedemptions:  copyIntPointer(normalized.MaxRedemptions),
+		PerUserLimit:    normalized.PerUserLimit,
+		Status:          domainbilling.RedemptionCodeStatusActive,
+		ExpiresAt:       normalized.ExpiresAt,
+		Description:     normalized.Description,
+		CreatedByUserID: actorUserID,
+	}
+	return s.repo.CreateRedemptionCode(ctx, item)
 }
 
 // UpdateRedemptionCode 更新兑换码管理字段，不允许修改奖励本身。
@@ -536,15 +561,25 @@ func normalizeRedemptionStatus(value string) string {
 	}
 }
 
+// redemptionCodeAlphabet 随机兑换码字母表，剔除易混淆的 0、1、I、O 后共 32 个字符。
+// 256 恰好被 32 整除，逐字节取模映射不产生偏差。
+const redemptionCodeAlphabet = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"
+
+// generateRedemptionCode 生成 XXXX-XXXX-XXXX-XXXX 格式的随机兑换码。
 func generateRedemptionCode() (string, error) {
 	raw := make([]byte, defaultRedemptionCodeBytes)
 	if _, err := rand.Read(raw); err != nil {
 		return "", err
 	}
-	raw[6] = (raw[6] & 0x0f) | 0x40
-	raw[8] = (raw[8] & 0x3f) | 0x80
-	value := strings.ToUpper(hex.EncodeToString(raw))
-	return value[:8] + "-" + value[8:12] + "-" + value[12:16] + "-" + value[16:20] + "-" + value[20:], nil
+	var builder strings.Builder
+	builder.Grow(defaultRedemptionCodeBytes + 3)
+	for index, value := range raw {
+		if index > 0 && index%4 == 0 {
+			builder.WriteByte('-')
+		}
+		builder.WriteByte(redemptionCodeAlphabet[int(value)%len(redemptionCodeAlphabet)])
+	}
+	return builder.String(), nil
 }
 
 func redemptionCodeHint(code string) string {

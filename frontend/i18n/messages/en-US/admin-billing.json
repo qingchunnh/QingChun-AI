@@ -117,7 +117,7 @@
     "unavailableExpired": "This redemption code has expired.",
     "unavailableExhausted": "This redemption code has no remaining redemptions.",
     "code": "Code",
-    "codePlaceholder": "Leave blank to generate UUID",
+    "codePlaceholder": "Leave blank to generate",
     "quantity": "Quantity",
     "mode": "Billing mode",
     "status": "Status",

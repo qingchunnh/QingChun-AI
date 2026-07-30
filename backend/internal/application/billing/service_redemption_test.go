@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -16,17 +17,18 @@ import (
 
 type redemptionRepositoryStub struct {
 	*billingRepositoryStub
-	plan         *domainbilling.Plan
-	created      []domainbilling.RedemptionCode
-	getByIDErr   error
-	createErr    error
-	deleteErr    error
-	deletedIDs   []uint
-	listFilter   repository.RedemptionCodeListFilter
-	listCalled   bool
-	redeemInput  *repository.RedemptionApplyInput
-	redeemResult *repository.RedemptionApplyResult
-	redeemErr    error
+	plan                    *domainbilling.Plan
+	created                 []domainbilling.RedemptionCode
+	getByIDErr              error
+	createErr               error
+	createFailuresRemaining int
+	deleteErr               error
+	deletedIDs              []uint
+	listFilter              repository.RedemptionCodeListFilter
+	listCalled              bool
+	redeemInput             *repository.RedemptionApplyInput
+	redeemResult            *repository.RedemptionApplyResult
+	redeemErr               error
 }
 
 func newRedemptionRepositoryStub(mode string) *redemptionRepositoryStub {
@@ -45,6 +47,10 @@ func (r *redemptionRepositoryStub) GetPlanByID(context.Context, uint) (*domainbi
 func (r *redemptionRepositoryStub) CreateRedemptionCode(_ context.Context, item *domainbilling.RedemptionCode) (*domainbilling.RedemptionCode, error) {
 	if item == nil {
 		return nil, repository.ErrInvalidInput
+	}
+	if r.createFailuresRemaining > 0 {
+		r.createFailuresRemaining--
+		return nil, repository.ErrDuplicate
 	}
 	if r.createErr != nil {
 		return nil, r.createErr
@@ -140,8 +146,8 @@ func TestCreateRedemptionCodesStoresHashAndReturnsPlaintextOnce(t *testing.T) {
 }
 
 func TestRedemptionCodeHintUsesFourStarFourFormat(t *testing.T) {
-	if got := redemptionCodeHint("C72F6A7A-241A-4CE0-AD4F-A0E511672A46"); got != "C72F***2A46" {
-		t.Fatalf("redemptionCodeHint() = %q, want C72F***2A46", got)
+	if got := redemptionCodeHint("7K2M-9X4B-QN6D-3W8A"); got != "7K2M***3W8A" {
+		t.Fatalf("redemptionCodeHint() = %q, want 7K2M***3W8A", got)
 	}
 }
 
@@ -334,8 +340,8 @@ func TestCreateRedemptionCodesRandomDefaultsToSingleUse(t *testing.T) {
 		if !validRedemptionCode(items[index].Code) {
 			t.Fatalf("returned random code %q is invalid", items[index].Code)
 		}
-		if !isUppercaseUUID(items[index].Code) {
-			t.Fatalf("returned random code %q is not uppercase UUID v4", items[index].Code)
+		if !isGroupedRedemptionCode(items[index].Code) {
+			t.Fatalf("returned random code %q is not in XXXX-XXXX-XXXX-XXXX format", items[index].Code)
 		}
 	}
 }
@@ -456,6 +462,49 @@ func TestCreateRedemptionCodesMapsDuplicateHash(t *testing.T) {
 	}
 }
 
+func TestCreateRedemptionCodesRetriesRandomCodeOnDuplicateHash(t *testing.T) {
+	repo := newRedemptionRepositoryStub(domainbilling.RedemptionCodeModeUsage)
+	repo.createFailuresRemaining = 2
+	service := NewService(repo)
+	service.SetRedemptionCodeSecret("test-secret")
+
+	items, err := service.CreateRedemptionCodes(context.Background(), 7, RedemptionCodeInput{
+		Quantity:     1,
+		Mode:         domainbilling.RedemptionCodeModeUsage,
+		CreditUSD:    5,
+		PerUserLimit: 1,
+	})
+	if err != nil {
+		t.Fatalf("CreateRedemptionCodes() error = %v", err)
+	}
+	if len(items) != 1 || !isGroupedRedemptionCode(items[0].Code) {
+		t.Fatalf("CreateRedemptionCodes() items = %+v, want one grouped random code", items)
+	}
+	if repo.createFailuresRemaining != 0 {
+		t.Fatalf("remaining duplicate failures = %d, want 0", repo.createFailuresRemaining)
+	}
+}
+
+func TestCreateRedemptionCodesFailsAfterExhaustingRandomRetries(t *testing.T) {
+	repo := newRedemptionRepositoryStub(domainbilling.RedemptionCodeModeUsage)
+	repo.createFailuresRemaining = maxRedemptionCodeGenerateAttempts
+	service := NewService(repo)
+	service.SetRedemptionCodeSecret("test-secret")
+
+	_, err := service.CreateRedemptionCodes(context.Background(), 7, RedemptionCodeInput{
+		Quantity:     1,
+		Mode:         domainbilling.RedemptionCodeModeUsage,
+		CreditUSD:    5,
+		PerUserLimit: 1,
+	})
+	if !errors.Is(err, ErrRedemptionCodeConflict) {
+		t.Fatalf("CreateRedemptionCodes() error = %v, want ErrRedemptionCodeConflict", err)
+	}
+	if len(repo.created) != 0 {
+		t.Fatalf("created %d codes, want 0", len(repo.created))
+	}
+}
+
 func TestBatchDeleteRedemptionCodesMapsResults(t *testing.T) {
 	repo := newRedemptionRepositoryStub(domainbilling.RedemptionCodeModeUsage)
 	service := NewService(repo)
@@ -501,26 +550,20 @@ func TestRedeemCodeMapsRepositoryLimitErrors(t *testing.T) {
 	}
 }
 
-func isUppercaseUUID(value string) bool {
-	if len(value) != 36 {
+func isGroupedRedemptionCode(value string) bool {
+	if len(value) != 19 {
 		return false
 	}
-	for _, index := range []int{8, 13, 18, 23} {
-		if value[index] != '-' {
-			return false
-		}
-	}
-	if value[14] != '4' {
-		return false
-	}
-	switch value[19] {
-	case '8', '9', 'A', 'B':
-	default:
-		return false
-	}
-	for _, item := range value {
-		if item >= 'a' && item <= 'z' {
-			return false
+	for index, item := range value {
+		switch index {
+		case 4, 9, 14:
+			if item != '-' {
+				return false
+			}
+		default:
+			if !strings.ContainsRune(redemptionCodeAlphabet, item) {
+				return false
+			}
 		}
 	}
 	return true

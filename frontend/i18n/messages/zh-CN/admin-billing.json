@@ -117,7 +117,7 @@
     "unavailableExpired": "兑换码已过期。",
     "unavailableExhausted": "兑换次数已用完。",
     "code": "兑换码",
-    "codePlaceholder": "留空随机生成 UUID",
+    "codePlaceholder": "留空随机生成",
     "quantity": "数量",
     "mode": "计费模式",
     "status": "状态",
