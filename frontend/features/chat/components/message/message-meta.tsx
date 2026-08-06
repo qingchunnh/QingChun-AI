@@ -85,12 +85,10 @@ type MessageTimestampValues = {
   month: number;
   day: number;
   time: string;
-  paddedMonth: string;
-  paddedDay: string;
 };
 
 type MessageTimestampFormatter = (
-  key: "messageTodayTime" | "messageYesterdayTime" | "messageFullDateTime" | "fullDateTime",
+  key: "todayTime" | "yesterdayTime" | "thisYearDateTime" | "fullDateTime",
   values: MessageTimestampValues,
 ) => string;
 
@@ -108,13 +106,11 @@ function formatMessageTimestamp(value: string | undefined, formatLabel: MessageT
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  const paddedMonth = String(month).padStart(2, "0");
-  const paddedDay = String(day).padStart(2, "0");
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
   const timeLabel = [hours, minutes, seconds].map((part) => String(part).padStart(2, "0")).join(":");
-  const values = { year, month, day, paddedMonth, paddedDay, time: timeLabel };
+  const values = { year, month, day, time: timeLabel };
   const title = formatLabel("fullDateTime", values);
 
   const isToday =
@@ -123,7 +119,7 @@ function formatMessageTimestamp(value: string | undefined, formatLabel: MessageT
     date.getDate() === now.getDate();
 
   if (isToday) {
-    return { label: formatLabel("messageTodayTime", values), title };
+    return { label: formatLabel("todayTime", values), title };
   }
 
   const yesterday = new Date(now);
@@ -134,10 +130,14 @@ function formatMessageTimestamp(value: string | undefined, formatLabel: MessageT
     date.getDate() === yesterday.getDate();
 
   if (isYesterday) {
-    return { label: formatLabel("messageYesterdayTime", values), title };
+    return { label: formatLabel("yesterdayTime", values), title };
   }
 
-  return { label: formatLabel("messageFullDateTime", values), title };
+  if (year === now.getFullYear()) {
+    return { label: formatLabel("thisYearDateTime", values), title };
+  }
+
+  return { label: formatLabel("fullDateTime", values), title };
 }
 
 function MessageTimestamp({ timestamp }: { timestamp: MessageTimestampLabel | null }) {
