@@ -18,6 +18,8 @@ security:
   jwt_secret: "64位随机字符"
   data_encryption_key: "64位随机字符"
   ssrf_protection_enabled: true
+  ssrf_allowed_hosts: ""
+  ssrf_allowed_cidrs: ""
   turnstile_siteverify_url: "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 
 branding:
