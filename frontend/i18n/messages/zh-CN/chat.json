@@ -25,51 +25,51 @@
     "titles": {
       "morning": {
         "default": "{greeting}，{name}",
-        "start": "{greeting}，想从哪里开始？",
+        "start": "{greeting}，今天想从哪里开始？",
         "today": "{name}，今天想聊点什么？",
-        "help": "{greeting}，有什么需要处理？",
-        "continue": "{name}，继续哪件事？",
-        "ready": "{greeting}，今天需要做什么？",
-        "focus": "{name}，先看哪一块？",
-        "next": "{greeting}，下一步是什么？",
-        "draft": "{name}，先起个草稿？",
-        "quiet": "{greeting}，随时开始。"
+        "help": "{greeting}，有什么我可以帮忙的？",
+        "continue": "{name}，从上次停下的地方继续？",
+        "ready": "{greeting}，今天打算做点什么？",
+        "focus": "{name}，先处理哪件事？",
+        "next": "{greeting}，接下来想做点什么？",
+        "draft": "{name}，聊点新话题？",
+        "quiet": "{greeting}，准备好了随时开始。"
       },
       "afternoon": {
         "default": "{greeting}，{name}",
-        "start": "{greeting}，想从哪里开始？",
+        "start": "{greeting}，今天想从哪里开始？",
         "today": "{name}，今天想聊点什么？",
-        "help": "{greeting}，有什么需要处理？",
-        "continue": "{name}，继续哪件事？",
-        "ready": "{greeting}，今天需要做什么？",
-        "focus": "{name}，先看哪一块？",
-        "next": "{greeting}，下一步是什么？",
-        "draft": "{name}，先起个草稿？",
-        "quiet": "{greeting}，随时开始。"
+        "help": "{greeting}，有什么我可以帮忙的？",
+        "continue": "{name}，从上次停下的地方继续？",
+        "ready": "{greeting}，今天打算做点什么？",
+        "focus": "{name}，先处理哪件事？",
+        "next": "{greeting}，接下来想做点什么？",
+        "draft": "{name}，聊点新话题？",
+        "quiet": "{greeting}，准备好了随时开始。"
       },
       "evening": {
         "default": "{greeting}，{name}",
-        "start": "{greeting}，想从哪里开始？",
+        "start": "{greeting}，今晚想从哪里开始？",
         "today": "{name}，今晚想聊点什么？",
-        "help": "{greeting}，有什么需要处理？",
-        "continue": "{name}，继续哪件事？",
-        "ready": "{greeting}，今晚需要做什么？",
-        "focus": "{name}，先看哪一块？",
-        "next": "{greeting}，下一步是什么？",
-        "draft": "{name}，先起个草稿？",
-        "quiet": "{greeting}，随时开始。"
+        "help": "{greeting}，有什么我可以帮忙的？",
+        "continue": "{name}，从上次停下的地方继续？",
+        "ready": "{greeting}，今晚打算做点什么？",
+        "focus": "{name}，先处理哪件事？",
+        "next": "{greeting}，接下来想做点什么？",
+        "draft": "{name}，聊点新话题？",
+        "quiet": "{greeting}，准备好了随时开始。"
       },
       "default": {
         "default": "{greeting}，{name}",
-        "start": "{greeting}，想从哪里开始？",
+        "start": "{greeting}，今天想从哪里开始？",
         "today": "{name}，今天想聊点什么？",
-        "help": "{greeting}，有什么需要处理？",
-        "continue": "{name}，继续哪件事？",
-        "ready": "{greeting}，今天需要做什么？",
-        "focus": "{name}，先看哪一块？",
-        "next": "{greeting}，下一步是什么？",
-        "draft": "{name}，先起个草稿？",
-        "quiet": "{greeting}，随时开始。"
+        "help": "{greeting}，有什么我可以帮忙的？",
+        "continue": "{name}，从上次停下的地方继续？",
+        "ready": "{greeting}，今天打算做点什么？",
+        "focus": "{name}，先处理哪件事？",
+        "next": "{greeting}，接下来想做点什么？",
+        "draft": "{name}，聊点新话题？",
+        "quiet": "{greeting}，准备好了随时开始。"
       }
     }
   },
