@@ -84,7 +84,8 @@
     "lastThirtyDays": "Last 30 days"
   },
   "time": {
-    "todayTime": "{time}",
+    "todayTime": "Today {time}",
+    "yesterdayTime": "Yesterday {time}",
     "thisYearDateTime": "{month}-{day} {time}",
     "fullDateTime": "{year}-{month}-{day} {time}",
     "messageTodayTime": "Today {time}",

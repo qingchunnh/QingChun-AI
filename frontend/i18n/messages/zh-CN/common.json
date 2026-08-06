@@ -84,7 +84,8 @@
     "lastThirtyDays": "30 天内"
   },
   "time": {
-    "todayTime": "{time}",
+    "todayTime": "今天 {time}",
+    "yesterdayTime": "昨天 {time}",
     "thisYearDateTime": "{month}月{day}日 {time}",
     "fullDateTime": "{year}年{month}月{day}日 {time}",
     "messageTodayTime": "今天 {time}",

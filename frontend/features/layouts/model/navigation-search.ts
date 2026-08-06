@@ -147,7 +147,7 @@ type UpdatedAtLabelValues = {
 };
 
 type UpdatedAtLabelFormatter = (
-  key: "todayTime" | "thisYearDateTime" | "fullDateTime",
+  key: "todayTime" | "yesterdayTime" | "thisYearDateTime" | "fullDateTime",
   values: UpdatedAtLabelValues,
 ) => string;
 
@@ -162,6 +162,12 @@ export function formatUpdatedAtLabel(value: string, formatLabel: UpdatedAtLabelF
     date.getFullYear() === now.getFullYear() &&
     date.getMonth() === now.getMonth() &&
     date.getDate() === now.getDate();
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday =
+    date.getFullYear() === yesterday.getFullYear() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getDate() === yesterday.getDate();
   const isCurrentYear = date.getFullYear() === now.getFullYear();
   const timeLabel = [date.getHours(), date.getMinutes(), date.getSeconds()]
     .map((part) => String(part).padStart(2, "0"))
@@ -175,6 +181,10 @@ export function formatUpdatedAtLabel(value: string, formatLabel: UpdatedAtLabelF
 
   if (isToday) {
     return formatLabel("todayTime", values);
+  }
+
+  if (isYesterday) {
+    return formatLabel("yesterdayTime", values);
   }
 
   return formatLabel(isCurrentYear ? "thisYearDateTime" : "fullDateTime", values);
