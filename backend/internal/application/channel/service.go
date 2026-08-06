@@ -95,6 +95,7 @@ func (s *Service) isModelAccessible(ctx context.Context, platformModelID uint, u
 type Service struct {
 	cfg                *config.Runtime
 	repo               repository.ChannelRepository
+	presentationRepo   repository.ModelPresentationRepository
 	cache              repository.ChannelCacheRepository
 	llmClient          *llm.Client
 	modelPricingFilter billingModelPricingFilter
@@ -137,6 +138,7 @@ type ResolvedRoute struct {
 	ModelSystemPrompt               string
 	UpstreamModel                   string
 	ReasoningContentPassback        bool
+	ReasoningPassbackRequestOptions map[string]interface{}
 	UpstreamCbFailureThreshold      int
 	UpstreamCbModelThreshold        int
 	UpstreamCbThresholdLogic        string
@@ -161,6 +163,7 @@ type ResolveRouteInput struct {
 	UserID            uint
 	ConversationID    uint
 	RequestID         string
+	ExcludedRouteIDs  []uint
 }
 
 type routeCandidate struct {
@@ -190,17 +193,18 @@ const (
 var localAPIKeyCounters sync.Map
 
 // NewService 创建服务。
-func NewService(cfg config.Config, repo repository.ChannelRepository, cache repository.ChannelCacheRepository, llmClient *llm.Client) *Service {
-	return NewServiceWithRuntime(config.NewRuntime(cfg), repo, cache, llmClient)
+func NewService(cfg config.Config, repo repository.ChannelRepository, presentationRepo repository.ModelPresentationRepository, cache repository.ChannelCacheRepository, llmClient *llm.Client) *Service {
+	return NewServiceWithRuntime(config.NewRuntime(cfg), repo, presentationRepo, cache, llmClient)
 }
 
 // NewServiceWithRuntime 创建使用运行时配置容器的服务。
-func NewServiceWithRuntime(cfg *config.Runtime, repo repository.ChannelRepository, cache repository.ChannelCacheRepository, llmClient *llm.Client) *Service {
+func NewServiceWithRuntime(cfg *config.Runtime, repo repository.ChannelRepository, presentationRepo repository.ModelPresentationRepository, cache repository.ChannelCacheRepository, llmClient *llm.Client) *Service {
 	return &Service{
-		cfg:       cfg,
-		repo:      repo,
-		cache:     cache,
-		llmClient: llmClient,
+		cfg:              cfg,
+		repo:             repo,
+		presentationRepo: presentationRepo,
+		cache:            cache,
+		llmClient:        llmClient,
 	}
 }
 

@@ -17,6 +17,11 @@ export type ChatModelOption = {
   platformModelName: string;
   icon: string;
   vendor: string;
+  vendorName: string;
+  vendorIcon: string;
+  displayGroupID: number | null;
+  displayGroupName: string;
+  displayGroupIcon: string;
   kinds: string[];
   protocols: string[];
   defaultOptions: ConversationOptions;
@@ -67,6 +72,9 @@ export type UploadingAttachment = {
 
 export type PendingExchange = {
   key: string;
+  conversationScopeKey: string;
+  branchScopePath: string[];
+  branchScopeRunID: string;
   conversationPublicID: string | null;
   tempUserPublicID: string;
   tempAssistantPublicID: string;
