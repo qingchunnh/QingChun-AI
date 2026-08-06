@@ -23,7 +23,7 @@ const MessageErrorCodeMediaImageStreamUnsupported = "media.image_stream_unsuppor
 
 const (
 	maxConversationImageContextCount = 10
-	maxConversationImageContextBytes = 20 * 1024 * 1024
+	maxConversationImageContextBytes = 40 * 1024 * 1024
 	maxConversationImageSourceBytes  = 50 * 1024 * 1024
 )
 

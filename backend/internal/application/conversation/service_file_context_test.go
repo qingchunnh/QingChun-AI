@@ -138,7 +138,7 @@ func TestInjectConversationImageContextRejectsMissingAndOversizedContext(t *test
 		t.Fatalf("expected missing historical image to fail explicitly, got %v", err)
 	}
 
-	largeData := make([]byte, 11*1024*1024)
+	largeData := make([]byte, 21*1024*1024)
 	cache := defaultPreparedConversationImageCache()
 	attachments := []AttachmentInput{
 		{FileID: "one", Kind: "image", MimeType: "image/png", StoragePath: "one", ContextMode: fileContextModeDirectImage},
