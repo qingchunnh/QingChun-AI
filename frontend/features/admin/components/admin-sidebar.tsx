@@ -41,7 +41,7 @@ function resolveActiveSectionFromPath(pathname: string, basePath: string): Admin
     return pathname === href || pathname.startsWith(`${href}/`);
   });
 
-  return section?.id ?? "statistics";
+  return section?.id ?? "accounts";
 }
 
 export function AdminSidebar({
