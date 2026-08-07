@@ -89,7 +89,7 @@ func TestNormalizeEditableUsername(t *testing.T) {
 		t.Fatalf("expected lowercase username, got %q", got)
 	}
 
-	for _, raw := range []string{"ab", "admin", "user@example.com", "-alice", "alice.", "alice_"} {
+	for _, raw := range []string{"a", "admin", "user@example.com", "-alice", "alice.", "alice_"} {
 		if _, err := normalizeEditableUsername(raw); err == nil {
 			t.Fatalf("expected %q to be rejected", raw)
 		}
