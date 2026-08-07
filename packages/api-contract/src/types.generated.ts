@@ -982,7 +982,7 @@ export interface CreatePermissionGroupRequest {
 
 export interface CreateRedemptionCodeRequest {
   /**
-   * @minLength 3
+   * @minLength 2
    * @maxLength 64
    */
   code?: string;
@@ -1065,7 +1065,7 @@ export interface CreateUserRequest {
   /** @maxLength 2048 */
   avatarURL?: string;
   /**
-   * @minLength 3
+   * @minLength 2
    * @maxLength 16
    */
   displayName?: string;
@@ -1086,7 +1086,7 @@ export interface CreateUserRequest {
   /** @maxLength 64 */
   timezone?: string;
   /**
-   * @minLength 3
+   * @minLength 2
    * @maxLength 16
    */
   username: string;
@@ -1431,7 +1431,7 @@ export interface LoginRequest {
    */
   password: string;
   /**
-   * @minLength 3
+   * @minLength 2
    * @maxLength 128
    */
   username: string;
@@ -1978,7 +1978,7 @@ export interface PatchMeRequest {
   /** @maxLength 2048 */
   avatarURL?: string;
   /**
-   * @minLength 3
+   * @minLength 2
    * @maxLength 16
    */
   displayName?: string;
@@ -2038,7 +2038,7 @@ export interface PatchUserRequest {
   /** @maxLength 2048 */
   avatarURL?: string;
   /**
-   * @minLength 3
+   * @minLength 2
    * @maxLength 16
    */
   displayName?: string;
@@ -2065,7 +2065,7 @@ export interface PatchUserRequest {
 
 export interface PatchUsernameRequest {
   /**
-   * @minLength 3
+   * @minLength 2
    * @maxLength 16
    */
   username: string;
@@ -2359,7 +2359,7 @@ export interface PublicSharedMessageResponse {
 
 export interface RedeemCodeRequest {
   /**
-   * @minLength 3
+   * @minLength 2
    * @maxLength 64
    */
   code: string;
