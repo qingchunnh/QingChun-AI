@@ -64,7 +64,7 @@ type UpdateBillingAccountBalanceRequest struct {
 
 // CreateRedemptionCodeRequest 创建兑换码请求。
 type CreateRedemptionCodeRequest struct {
-	Code           string     `json:"code,omitempty" binding:"omitempty,min=3,max=64"`
+	Code           string     `json:"code,omitempty" binding:"omitempty,min=2,max=64"`
 	Quantity       int        `json:"quantity,omitempty" binding:"omitempty,min=1,max=100"`
 	Mode           string     `json:"mode" binding:"required,oneof=usage period"`
 	CreditUSD      float64    `json:"creditUSD,omitempty" binding:"omitempty,min=0"`
@@ -101,7 +101,7 @@ type BatchDeleteRedemptionCodeRequest struct {
 
 // RedeemCodeRequest 用户兑换请求。
 type RedeemCodeRequest struct {
-	Code string `json:"code" binding:"required,min=3,max=64"`
+	Code string `json:"code" binding:"required,min=2,max=64"`
 }
 
 // UpdateBillingPlanRequest 保存周期套餐。

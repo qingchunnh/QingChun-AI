@@ -527,7 +527,7 @@ func normalizeRedemptionCode(value string) string {
 }
 
 func validRedemptionCode(value string) bool {
-	if len(value) < 3 || len(value) > 64 {
+	if len(value) < 2 || len(value) > 64 {
 		return false
 	}
 	for _, item := range value {

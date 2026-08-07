@@ -15188,7 +15188,7 @@
                 "code": {
                     "type": "string",
                     "maxLength": 64,
-                    "minLength": 3
+                    "minLength": 2
                 },
                 "creditUSD": {
                     "type": "number",
@@ -15365,7 +15365,7 @@
                 "displayName": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 3
+                    "minLength": 2
                 },
                 "email": {
                     "type": "string",
@@ -15398,7 +15398,7 @@
                 "username": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 3
+                    "minLength": 2
                 }
             }
         },
@@ -16467,7 +16467,7 @@
                 "username": {
                     "type": "string",
                     "maxLength": 128,
-                    "minLength": 3
+                    "minLength": 2
                 }
             }
         },
@@ -18317,7 +18317,7 @@
                 "displayName": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 3
+                    "minLength": 2
                 },
                 "locale": {
                     "type": "string",
@@ -18441,7 +18441,7 @@
                 "displayName": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 3
+                    "minLength": 2
                 },
                 "email": {
                     "type": "string",
@@ -18493,7 +18493,7 @@
                 "username": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 3
+                    "minLength": 2
                 }
             }
         },
@@ -19463,7 +19463,7 @@
                 "code": {
                     "type": "string",
                     "maxLength": 64,
-                    "minLength": 3
+                    "minLength": 2
                 }
             }
         },

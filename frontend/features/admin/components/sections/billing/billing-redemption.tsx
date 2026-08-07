@@ -127,7 +127,7 @@ function parseRequiredPositiveInt(value: string): number | undefined {
 
 function isRedemptionCodeFormatValid(value: string): boolean {
   const text = value.trim();
-  return !text || /^[A-Za-z0-9_-]{3,64}$/.test(text);
+  return !text || /^[A-Za-z0-9_-]{2,64}$/.test(text);
 }
 
 export function BillingRedemptionSection({ plans, billingMode, loading }: BillingRedemptionSectionProps) {

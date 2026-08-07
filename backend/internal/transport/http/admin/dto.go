@@ -17,10 +17,10 @@ import (
 
 // CreateUserRequest 管理员创建用户请求。
 type CreateUserRequest struct {
-	Username              string     `json:"username" binding:"required,min=3,max=16"`
+	Username              string     `json:"username" binding:"required,min=2,max=16"`
 	Password              string     `json:"password" binding:"required,min=8,max=128"`
 	AvatarURL             string     `json:"avatarURL,omitempty" binding:"max=2048"`
-	DisplayName           string     `json:"displayName,omitempty" binding:"omitempty,min=3,max=16"`
+	DisplayName           string     `json:"displayName,omitempty" binding:"omitempty,min=2,max=16"`
 	Email                 string     `json:"email,omitempty" binding:"omitempty,max=128,email"`
 	Phone                 string     `json:"phone,omitempty" binding:"max=32"`
 	Timezone              string     `json:"timezone,omitempty" binding:"max=64"`
@@ -38,7 +38,7 @@ type UpdateUserStatusRequest struct {
 // PatchUserRequest 管理员局部更新用户请求。
 type PatchUserRequest struct {
 	AvatarURL             *string    `json:"avatarURL,omitempty" binding:"omitempty,max=2048"`
-	DisplayName           *string    `json:"displayName,omitempty" binding:"omitempty,min=3,max=16"`
+	DisplayName           *string    `json:"displayName,omitempty" binding:"omitempty,min=2,max=16"`
 	Email                 *string    `json:"email,omitempty" binding:"omitempty,max=128"`
 	Phone                 *string    `json:"phone,omitempty" binding:"omitempty,max=32"`
 	Role                  *string    `json:"role,omitempty" binding:"omitempty,max=32"`

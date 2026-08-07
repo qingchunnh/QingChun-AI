@@ -294,7 +294,7 @@
     "planSaved": "周期套餐已保存",
     "planSaveFailed": "保存周期套餐失败",
     "redemptionInvalid": "兑换码配置无效",
-    "redemptionInvalidCodeFormat": "兑换码只能包含 3-64 位字母、数字、横线或下划线。",
+    "redemptionInvalidCodeFormat": "兑换码只能包含 2-64 位字母、数字、横线或下划线。",
     "redemptionInvalidQuantity": "数量必须是大于 0 的整数。",
     "redemptionInvalidCredit": "余额金额必须大于 0。",
     "redemptionInvalidPlan": "请选择一个启用的非 Free 套餐。",

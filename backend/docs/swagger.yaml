@@ -2331,7 +2331,7 @@ definitions:
     properties:
       code:
         maxLength: 64
-        minLength: 3
+        minLength: 2
         type: string
       creditUSD:
         minimum: 0
@@ -2458,7 +2458,7 @@ definitions:
         type: string
       displayName:
         maxLength: 16
-        minLength: 3
+        minLength: 2
         type: string
       email:
         maxLength: 128
@@ -2483,7 +2483,7 @@ definitions:
         type: string
       username:
         maxLength: 16
-        minLength: 3
+        minLength: 2
         type: string
     required:
     - password
@@ -3225,7 +3225,7 @@ definitions:
         type: string
       username:
         maxLength: 128
-        minLength: 3
+        minLength: 2
         type: string
     required:
     - password
@@ -4525,7 +4525,7 @@ definitions:
         type: string
       displayName:
         maxLength: 16
-        minLength: 3
+        minLength: 2
         type: string
       locale:
         maxLength: 16
@@ -4613,7 +4613,7 @@ definitions:
         type: string
       displayName:
         maxLength: 16
-        minLength: 3
+        minLength: 2
         type: string
       email:
         maxLength: 128
@@ -4649,7 +4649,7 @@ definitions:
     properties:
       username:
         maxLength: 16
-        minLength: 3
+        minLength: 2
         type: string
     required:
     - username
@@ -5337,7 +5337,7 @@ definitions:
     properties:
       code:
         maxLength: 64
-        minLength: 3
+        minLength: 2
         type: string
     required:
     - code

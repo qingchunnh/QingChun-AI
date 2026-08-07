@@ -9,7 +9,7 @@ import (
 
 // LoginRequest 登录请求。
 type LoginRequest struct {
-	Username string `json:"username" binding:"required,min=3,max=128"`
+	Username string `json:"username" binding:"required,min=2,max=128"`
 	Password string `json:"password" binding:"required,min=6,max=128"`
 }
 
@@ -297,7 +297,7 @@ type UserIdentityResponseData struct {
 // PatchMeRequest 更新当前用户资料请求。
 type PatchMeRequest struct {
 	AvatarURL             *string `json:"avatarURL,omitempty" binding:"omitempty,max=2048"`
-	DisplayName           *string `json:"displayName,omitempty" binding:"omitempty,min=3,max=16"`
+	DisplayName           *string `json:"displayName,omitempty" binding:"omitempty,min=2,max=16"`
 	Timezone              *string `json:"timezone,omitempty" binding:"omitempty,max=64"`
 	Locale                *string `json:"locale,omitempty" binding:"omitempty,max=16"`
 	ProfilePreferences    *string `json:"profilePreferences,omitempty" binding:"omitempty,max=1024"`
@@ -305,7 +305,7 @@ type PatchMeRequest struct {
 }
 
 type PatchUsernameRequest struct {
-	Username string `json:"username" binding:"required,min=3,max=16"`
+	Username string `json:"username" binding:"required,min=2,max=16"`
 }
 
 // UpdateCurrentSessionLocationRequest 更新当前会话的精确位置请求。

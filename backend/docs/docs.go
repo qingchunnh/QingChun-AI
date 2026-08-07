@@ -15195,7 +15195,7 @@ const docTemplate = `{
                 "code": {
                     "type": "string",
                     "maxLength": 64,
-                    "minLength": 3
+                    "minLength": 2
                 },
                 "creditUSD": {
                     "type": "number",
@@ -15372,7 +15372,7 @@ const docTemplate = `{
                 "displayName": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 3
+                    "minLength": 2
                 },
                 "email": {
                     "type": "string",
@@ -15405,7 +15405,7 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 3
+                    "minLength": 2
                 }
             }
         },
@@ -16474,7 +16474,7 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "maxLength": 128,
-                    "minLength": 3
+                    "minLength": 2
                 }
             }
         },
@@ -18324,7 +18324,7 @@ const docTemplate = `{
                 "displayName": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 3
+                    "minLength": 2
                 },
                 "locale": {
                     "type": "string",
@@ -18448,7 +18448,7 @@ const docTemplate = `{
                 "displayName": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 3
+                    "minLength": 2
                 },
                 "email": {
                     "type": "string",
@@ -18500,7 +18500,7 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 3
+                    "minLength": 2
                 }
             }
         },
@@ -19470,7 +19470,7 @@ const docTemplate = `{
                 "code": {
                     "type": "string",
                     "maxLength": 64,
-                    "minLength": 3
+                    "minLength": 2
                 }
             }
         },
