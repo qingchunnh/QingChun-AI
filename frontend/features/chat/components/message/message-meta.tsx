@@ -73,6 +73,10 @@ export type ChatMetaMessage = {
 // like/dislike buttons once the feedback API is implemented.
 const ENABLE_MESSAGE_FEEDBACK = false;
 
+// Feature flag: quick memory pin ("remember preference") is hidden below
+// assistant messages. Flip to `true` to re-enable the button.
+const ENABLE_QUICK_MEMORY_PIN = false;
+
 export type AssistantReaction = "up" | "down" | null;
 
 type MessageTimestampLabel = {
@@ -1118,7 +1122,9 @@ export function AssistantMessageMeta({
                     <Forward className="size-3.5" strokeWidth={1.8} />
                   </MetaIconButton>
                 ) : null}
-                <QuickMemoryPin disabled={messagePending} />
+                {ENABLE_QUICK_MEMORY_PIN ? (
+                  <QuickMemoryPin disabled={messagePending} />
+                ) : null}
               </>
             ) : null}
             {canShowBranchNavigator ? <BranchSwitcher item={item} onCycle={onCycleBranch} /> : null}
