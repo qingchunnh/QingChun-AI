@@ -18,7 +18,7 @@ import (
 
 const (
 	conversationMetadataMessageMaxTokens     = int64(5000)
-	conversationFallbackTitleMaxRunes        = 40
+	conversationFallbackTitleMaxRunes        = 30
 	conversationLabelsMaxCount               = 6
 	conversationLabelMaxRunes                = 24
 	conversationMetadataGenerationTimeout    = 90 * time.Second

@@ -351,7 +351,7 @@
       "keepLastUsedModel": "保留上次使用的模型",
       "keepLastUsedModelDescription": "开启后，新对话优先沿用上次使用的模型；该模型不可用或未使用过任何模型时，回退到新对话默认模型。",
       "autoTitle": "自动生成标题",
-      "autoTitleDescription": "关闭后，新对话使用第一条消息的前 40 个字符作为标题。",
+      "autoTitleDescription": "关闭后，新对话使用第一条消息的前 30 个字符作为标题。",
       "autoLabels": "自动生成标签",
       "autoLabelsDescription": "关闭后，系统将不再自动生成对话标签，可减少辅助模型调用及相应的 Token 消耗。"
     },

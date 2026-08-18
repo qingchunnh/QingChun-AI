@@ -118,7 +118,7 @@ func TestParseGeneratedConversationLabelsHandlesLooseJSON(t *testing.T) {
 func TestConversationTitleFromFirstUserMessage(t *testing.T) {
 	cases := map[string]string{
 		"  这是一条很长的第一条用户消息，用来测试标题截断  ":        "这是一条很长的第一条用户消息，用来测试标题截断",
-		"  一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三  ": "一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十",
+		"  一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三  ": "一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十",
 		"\n\nhello   world   from   DEEIX\n": "hello world from DEEIX",
 		"\"简短标题\"":                           "简短标题",
 		"   ":                                "",
@@ -131,13 +131,13 @@ func TestConversationTitleFromFirstUserMessage(t *testing.T) {
 }
 
 func TestConversationFallbackTitleUsesUnifiedLimit(t *testing.T) {
-	if conversationFallbackTitleMaxRunes != 40 {
-		t.Fatalf("expected fallback title limit to stay unified at 40, got %d", conversationFallbackTitleMaxRunes)
+	if conversationFallbackTitleMaxRunes != 30 {
+		t.Fatalf("expected fallback title limit to stay unified at 30, got %d", conversationFallbackTitleMaxRunes)
 	}
 
 	got := conversationTitleFromFirstUserMessage("0123456789abcdefghij0123456789abcdefghij01234")
-	if got != "0123456789abcdefghij0123456789abcdefghij" {
-		t.Fatalf("expected fallback title to truncate to 40 runes, got %q", got)
+	if got != "0123456789abcdefghij0123456789" {
+		t.Fatalf("expected fallback title to truncate to 30 runes, got %q", got)
 	}
 }
 
