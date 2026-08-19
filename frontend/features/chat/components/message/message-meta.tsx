@@ -77,6 +77,10 @@ const ENABLE_MESSAGE_FEEDBACK = false;
 // assistant messages. Flip to `true` to re-enable the button.
 const ENABLE_QUICK_MEMORY_PIN = false;
 
+// Feature flag: continue-interrupted-reply button is hidden below assistant
+// messages. Flip to `true` to re-enable the button.
+const ENABLE_CONTINUE_REPLY = false;
+
 export type AssistantReaction = "up" | "down" | null;
 
 type MessageTimestampLabel = {
@@ -1114,7 +1118,7 @@ export function AssistantMessageMeta({
                     <RotateCcw size={14} strokeWidth={1.8} animateOnHover="default" />
                   </MetaIconButton>
                 ) : null}
-                {canContinue && onContinue ? (
+                {ENABLE_CONTINUE_REPLY && canContinue && onContinue ? (
                   <MetaIconButton
                     label={t("continueReply")}
                     onClick={onContinue}
