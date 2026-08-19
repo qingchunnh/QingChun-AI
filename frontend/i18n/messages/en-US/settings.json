@@ -177,7 +177,8 @@
         "twoFactor": "Enter your authenticator code or a recovery code to delete the account.",
         "email": "Send a code to your verified email, then enter it to delete the account."
       },
-      "verificationUnavailable": "Account deletion requires identity verification. Verify your email or enable two-factor authentication first."
+      "verificationUnavailable": "Account deletion requires identity verification. Verify your email or enable two-factor authentication first.",
+      "contactAdmin": "To delete your account, please contact the administrator."
     },
     "securityDialog": {
       "common": {

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 import {
   AlertDialog,
@@ -163,7 +164,11 @@ export function SettingsAccount() {
         onOpenTwoFactorDialog={handleOpenTwoFactor}
         onStartTwoFactorSetup={handleStartTwoFactor}
         onLogoutAll={() => void handleLogoutAll()}
-        onOpenDeleteDialog={() => setDeleteDialogOpen(true)}
+        onOpenDeleteDialog={() => {
+          // Local customization: account deletion is admin-managed, so only show a hint here.
+          // Keep the original delete dialog flow below intact to minimize upstream merge conflicts.
+          toast.info(t("deleteDialog.contactAdmin"));
+        }}
       />
 
       <SettingsSectionSeparator />

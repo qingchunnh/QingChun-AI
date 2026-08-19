@@ -177,7 +177,8 @@
         "twoFactor": "输入认证器验证码或恢复码后删除账号。",
         "email": "发送验证码到已验证邮箱，输入后删除账号。"
       },
-      "verificationUnavailable": "删除账号需要先验证身份。请先验证邮箱或启用两步验证。"
+      "verificationUnavailable": "删除账号需要先验证身份。请先验证邮箱或启用两步验证。",
+      "contactAdmin": "如需删除账号，请联系管理员。"
     },
     "securityDialog": {
       "common": {
