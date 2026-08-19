@@ -308,6 +308,7 @@ export function ChatMCP({
         sideOffset={8}
         data-mcp-tools-popover-content
         className="w-[22rem] p-1.5"
+        onOpenAutoFocus={(event) => event.preventDefault()}
         onPointerDown={(event) => event.stopPropagation()}
         onMouseDown={(event) => event.stopPropagation()}
         onClick={(event) => event.stopPropagation()}
