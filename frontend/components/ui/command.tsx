@@ -35,16 +35,21 @@ function CommandDialog({
   children,
   className,
   commandProps,
+  contentProps,
   ...props
 }: React.ComponentProps<typeof Dialog> & {
   title?: string
   description?: string
   className?: string
   commandProps?: React.ComponentProps<typeof CommandPrimitive>
+  contentProps?: React.ComponentProps<typeof DialogContent>
 }) {
   return (
     <Dialog {...props}>
-      <DialogContent className={cn("overflow-hidden p-0", className)}>
+      <DialogContent
+        className={cn("overflow-hidden p-0", className)}
+        {...contentProps}
+      >
         <DialogHeader className="sr-only">
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>

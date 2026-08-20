@@ -330,6 +330,9 @@ export function NavigationSearch({
         value: previewPublicID,
         onValueChange: setPreviewPublicID,
       }}
+      contentProps={{
+        onOpenAutoFocus: (event) => event.preventDefault(),
+      }}
       className={cn(
         "h-auto w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] overflow-hidden rounded-lg border border-border/60 bg-background p-0 transition-[max-width] duration-200 ease-out sm:w-full",
         previewPaneEnabled
@@ -340,7 +343,6 @@ export function NavigationSearch({
       )}
     >
       <CommandInput
-        autoFocus
         maxLength={200}
         value={query}
         onValueChange={onQueryChange}
