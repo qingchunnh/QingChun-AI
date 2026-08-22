@@ -1,40 +1,45 @@
 "use client";
 
-import * as React from "react";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
   Brain,
+  CircleDollarSign,
   ClockArrowUp,
   ClockCheck,
-  CircleDollarSign,
-  TicketSlash,
+  Cpu,
   DatabaseSearch,
   DatabaseZap,
-  Cpu,
   FilePenLine,
   Forward,
+  TicketSlash,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import * as React from "react";
 import { toast } from "sonner";
 
 import { Brush } from "@/components/animate-ui/icons/brush";
+import { Check } from "@/components/animate-ui/icons/check";
 import { ChevronLeft } from "@/components/animate-ui/icons/chevron-left";
 import { ChevronRight } from "@/components/animate-ui/icons/chevron-right";
-import { Check } from "@/components/animate-ui/icons/check";
 import { Copy } from "@/components/animate-ui/icons/copy";
+import { GitFork } from "@/components/animate-ui/icons/git-fork";
 import { Heart } from "@/components/animate-ui/icons/heart";
 import { RotateCcw } from "@/components/animate-ui/icons/rotate-ccw";
 import { ThumbsDown } from "@/components/animate-ui/icons/thumbs-down";
 import { ThumbsUp } from "@/components/animate-ui/icons/thumbs-up";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
-import { upsertUserMemory } from "@/shared/api/memory";
-import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
 import { resolvePersistedPublicID } from "@/features/chat/model/message-submit";
+import type { ChatBillingCost, ChatMessageBranchNavigator } from "@/features/chat/types/messages";
+import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
+import { cn } from "@/lib/utils";
+import { upsertUserMemory } from "@/shared/api/memory";
+import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
+import { usePointerInteraction } from "@/shared/hooks/use-pointer-interaction";
+import type { BillingDisplayCurrency, BillingDisplayLabels, BillingDisplayOptions } from "@/shared/lib/billing-display";
 import {
   billingRateMultiplierNote,
   cacheWriteBillingLabel,
@@ -43,10 +48,6 @@ import {
   formatBillingDisplayPreciseAmountFromUSD,
   formatBillingDisplayUnitPriceFromUSD,
 } from "@/shared/lib/billing-display";
-import type { BillingDisplayCurrency, BillingDisplayLabels, BillingDisplayOptions } from "@/shared/lib/billing-display";
-import type { ChatBillingCost, ChatMessageBranchNavigator } from "@/features/chat/types/messages";
-import { usePointerInteraction } from "@/shared/hooks/use-pointer-interaction";
-import { cn } from "@/lib/utils";
 
 export type ChatMetaMessage = {
   publicID: string;
@@ -268,6 +269,43 @@ function MetaIconButton({
   );
 }
 
+function ForkMessageButton({
+  disabled = false,
+  label,
+  onFork,
+}: {
+  disabled?: boolean;
+  label: string;
+  onFork: () => Promise<void> | void;
+}) {
+  const inFlightRef = React.useRef(false);
+  const [inFlight, setInFlight] = React.useState(false);
+
+  const handleFork = React.useCallback(async () => {
+    if (inFlightRef.current) {
+      return;
+    }
+    inFlightRef.current = true;
+    setInFlight(true);
+    try {
+      await onFork();
+    } finally {
+      inFlightRef.current = false;
+      setInFlight(false);
+    }
+  }, [onFork]);
+
+  return (
+    <MetaIconButton
+      label={label}
+      disabled={disabled || inFlight}
+      onClick={() => void handleFork()}
+    >
+      <GitFork size={14} strokeWidth={1.8} animateOnHover="default" />
+    </MetaIconButton>
+  );
+}
+
 export function UserMessageMeta({
   item,
   showRetry,
@@ -275,6 +313,7 @@ export function UserMessageMeta({
   onRetry,
   onEdit,
   onCopy,
+  onFork,
   copySucceeded = false,
   readOnly = false,
   alwaysVisible = false,
@@ -286,6 +325,7 @@ export function UserMessageMeta({
   onRetry: () => void;
   onEdit: () => void;
   onCopy: () => void;
+  onFork?: () => Promise<void> | void;
   copySucceeded?: boolean;
   readOnly?: boolean;
   alwaysVisible?: boolean;
@@ -330,6 +370,13 @@ export function UserMessageMeta({
               <Copy size={14} strokeWidth={1.8} animateOnHover="default" />
             )}
           </MetaIconButton>
+          {hasPersistedMessage && onFork ? (
+            <ForkMessageButton
+              label={t("forkMessage")}
+              disabled={messagePending}
+              onFork={onFork}
+            />
+          ) : null}
         </div>
       ) : null}
       {canShowBranchNavigator ? <BranchSwitcher item={item} onCycle={onCycleBranch} /> : null}
@@ -971,6 +1018,7 @@ export function AssistantMessageMeta({
   onContinue,
   onEdit,
   onCopy,
+  onFork,
   copySucceeded = false,
   onReact,
   showModelInfo = true,
@@ -991,6 +1039,7 @@ export function AssistantMessageMeta({
   onContinue?: () => void;
   onEdit?: () => void;
   onCopy: () => void;
+  onFork?: () => Promise<void> | void;
   copySucceeded?: boolean;
   onReact: (value: AssistantReaction) => void;
   showModelInfo?: boolean;
@@ -1015,6 +1064,7 @@ export function AssistantMessageMeta({
   const canRetry = !readOnly && !messagePending && hasPersistedMessage;
   const canEdit = Boolean(canRetry && !busy && onEdit);
   const canContinue = Boolean(canRetry && !busy && item.status === "interrupted");
+  const canFork = Boolean(canRetry && onFork);
   const canShowBranchNavigator = Boolean(showBranchNavigator && item.branchNavigator);
   const hasTokenUsage = Boolean(
     (item.inputTokens ?? 0) > 0 ||
@@ -1125,6 +1175,12 @@ export function AssistantMessageMeta({
                   >
                     <Forward className="size-3.5" strokeWidth={1.8} />
                   </MetaIconButton>
+                ) : null}
+                {canFork ? (
+                  <ForkMessageButton
+                    label={t("forkMessage")}
+                    onFork={onFork}
+                  />
                 ) : null}
                 {ENABLE_QUICK_MEMORY_PIN ? (
                   <QuickMemoryPin disabled={messagePending} />

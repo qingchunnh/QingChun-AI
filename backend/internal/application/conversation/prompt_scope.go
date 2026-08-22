@@ -9,6 +9,10 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
 )
 
+func stringsEqualFold(a, b string) bool {
+	return strings.EqualFold(strings.TrimSpace(a), strings.TrimSpace(b))
+}
+
 type promptScope struct {
 	FullBranchMessages []model.Message
 	CoveredMessages    []model.Message
@@ -75,6 +79,9 @@ func historyMessagesFromDomain(messages []model.Message, options historyMessageO
 	historyMsgs := make([]llm.Message, 0, len(messages))
 	for _, item := range messages {
 		if item.Role != "user" && item.Role != "assistant" && item.Role != "system" {
+			continue
+		}
+		if stringsEqualFold(item.Status, "blocked") {
 			continue
 		}
 		message := llm.Message{
