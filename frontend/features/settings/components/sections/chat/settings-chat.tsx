@@ -710,6 +710,34 @@ export function SettingsChat() {
           </div>
 
           <div className="pt-4">
+            <SettingsFieldRow
+              title={t("display.positionRailTitle")}
+              description={t("display.positionRailDescription")}
+            >
+              <Switch
+                checked={settings.showMessagePositionRail}
+                onCheckedChange={handleBool("chat.show_message_position_rail", "showMessagePositionRail")}
+                disabled={loading}
+                aria-label={t("display.positionRailTitle")}
+              />
+            </SettingsFieldRow>
+          </div>
+
+          <div className="pt-4">
+            <SettingsFieldRow
+              title={t("display.outlineRailTitle")}
+              description={t("display.outlineRailDescription")}
+            >
+              <Switch
+                checked={settings.showResponseOutline}
+                onCheckedChange={handleBool("chat.show_response_outline", "showResponseOutline")}
+                disabled={loading}
+                aria-label={t("display.outlineRailTitle")}
+              />
+            </SettingsFieldRow>
+          </div>
+
+          <div className="pt-4">
             <ChatDisplayAppearance
               contentWidth={settings.contentWidth}
               chatFont={chatFont}

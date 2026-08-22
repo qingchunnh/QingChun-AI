@@ -389,6 +389,10 @@
       "costTitle": "显示调用总费用",
       "costDescription": "控制 AI 回复下方是否展示本次调用的总费用。",
       "costDescriptionSelfMode": "控制 AI 回复下方是否展示本次调用的总费用。自用模式不展示。",
+      "positionRailTitle": "显示消息位置栏",
+      "positionRailDescription": "控制是否在对话区域右侧展示消息位置导航栏。",
+      "outlineRailTitle": "显示回复大纲栏",
+      "outlineRailDescription": "控制是否在对话区域左侧展示 AI 回复的 Markdown 大纲导航栏。",
       "widthTitle": "对话区域宽度",
       "width": {
         "compact": "紧凑",

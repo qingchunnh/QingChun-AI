@@ -107,6 +107,38 @@ func TestReasoningContentPassbackSettingIsAllowed(t *testing.T) {
 	}
 }
 
+func TestMessagePositionRailSettingIsAllowed(t *testing.T) {
+	t.Parallel()
+
+	if got := allowedKeys["chat.show_message_position_rail"]; got != "true" {
+		t.Fatalf("expected chat.show_message_position_rail default to be true, got %q", got)
+	}
+	for _, value := range []string{"true", "false"} {
+		if err := validateValue("chat.show_message_position_rail", value); err != nil {
+			t.Fatalf("expected chat.show_message_position_rail=%s to be accepted, got %v", value, err)
+		}
+	}
+	if err := validateValue("chat.show_message_position_rail", "yes"); err == nil {
+		t.Fatal("expected invalid chat.show_message_position_rail to be rejected")
+	}
+}
+
+func TestResponseOutlineSettingIsAllowed(t *testing.T) {
+	t.Parallel()
+
+	if got := allowedKeys["chat.show_response_outline"]; got != "true" {
+		t.Fatalf("expected chat.show_response_outline default to be true, got %q", got)
+	}
+	for _, value := range []string{"true", "false"} {
+		if err := validateValue("chat.show_response_outline", value); err != nil {
+			t.Fatalf("expected chat.show_response_outline=%s to be accepted, got %v", value, err)
+		}
+	}
+	if err := validateValue("chat.show_response_outline", "yes"); err == nil {
+		t.Fatal("expected invalid chat.show_response_outline to be rejected")
+	}
+}
+
 func TestAutoGenerateLabelsSettingIsAllowed(t *testing.T) {
 	t.Parallel()
 

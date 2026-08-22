@@ -15,6 +15,8 @@ export type ChatSettings = {
   showModelInfo: boolean;
   showLatency: boolean;
   showBillingCost: boolean;
+  showMessagePositionRail: boolean;
+  showResponseOutline: boolean;
   markdownRender: boolean;
   autoGenerateTitle: boolean;
   autoGenerateLabels: boolean;

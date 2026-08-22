@@ -139,6 +139,8 @@ type ChatAreaProps = {
   showLatency?: boolean;
   showTokenUsage?: boolean;
   showBillingCost?: boolean;
+  showMessagePositionRail?: boolean;
+  showResponseOutline?: boolean;
   billingDisplayCurrency?: BillingDisplayCurrency;
   billingDisplayUsdToCnyRate?: number | null;
   splitRightInset?: boolean;
@@ -507,6 +509,8 @@ export function ChatArea({
   showLatency = true,
   showTokenUsage = true,
   showBillingCost = false,
+  showMessagePositionRail = true,
+  showResponseOutline = true,
   billingDisplayCurrency = "USD",
   billingDisplayUsdToCnyRate = null,
   splitRightInset = false,
@@ -761,10 +765,12 @@ export function ChatArea({
             >
               <ArrowDownToLine className="size-4" strokeWidth={1.8} />
             </MessageScrollerButton>
-            <ChatMessagePositionRail messages={messages} boundaryRef={messageViewportBoundaryRef} />
+            {showMessagePositionRail ? (
+              <ChatMessagePositionRail messages={messages} boundaryRef={messageViewportBoundaryRef} />
+            ) : null}
             <ChatResponseOutlineRail
               boundaryRef={messageViewportBoundaryRef}
-              disabled={selectionMode || splitRightInset}
+              disabled={selectionMode || splitRightInset || !showResponseOutline}
             />
           </MessageScroller>
         </MessageScrollerProvider>
