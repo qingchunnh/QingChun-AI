@@ -337,7 +337,7 @@ function ChatResponseOutlineRailComponent({
       <HoverCardTrigger asChild>
         <div
           ref={railViewportRef}
-          className="pointer-events-auto absolute bottom-3 right-2 top-3 z-30 hidden w-6 overflow-y-auto overscroll-contain text-muted-foreground/55 [scrollbar-width:none] lg:block [&::-webkit-scrollbar]:hidden"
+          className="pointer-events-auto absolute bottom-3 left-2 top-3 z-30 hidden w-6 overflow-y-auto overscroll-contain text-muted-foreground/55 [scrollbar-width:none] lg:block [&::-webkit-scrollbar]:hidden"
           role="navigation"
           aria-label={t("responseOutline")}
           data-screenshot-exclude="true"
@@ -364,7 +364,7 @@ function ChatResponseOutlineRailComponent({
                     railItemRefs.current.delete(index);
                   }}
                   type="button"
-                  className="flex h-1.5 w-6 items-center justify-end rounded-sm focus-visible:outline-none"
+                  className="flex h-1.5 w-6 items-center justify-start rounded-sm focus-visible:outline-none"
                   aria-current={active ? "location" : undefined}
                   aria-label={t("jumpToResponseSection", { title: item.label })}
                   onMouseEnter={() => setHoveredHeadingIndex(index)}
@@ -386,7 +386,7 @@ function ChatResponseOutlineRailComponent({
         </div>
       </HoverCardTrigger>
       <HoverCardContent
-        side="left"
+        side="right"
         align="center"
         sideOffset={8}
         avoidCollisions={false}
