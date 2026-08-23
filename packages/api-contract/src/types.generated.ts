@@ -1891,6 +1891,7 @@ export interface MessageTraceBlockResponse {
   payloadJSON?: string;
   roundID?: string;
   stage?: string;
+  startedAt?: string;
   status: string;
   summary: string;
   title: string;
@@ -2124,6 +2125,7 @@ export interface ModelResponse {
   cbFailureThreshold: number;
   cbPolicyMode: string;
   cbWindowMin: number;
+  contextWindow: number;
   createdAt: string;
   description: string;
   displayGroupID: number | null;
@@ -2262,7 +2264,9 @@ export interface OpenRouterOfficialPricingDataResponse {
 
 export interface OpenRouterOfficialPricingItemResponse {
   canonicalSlug: string;
+  contextLength: number;
   id: string;
+  maxCompletionTokens: number;
   name: string;
   pricing: OpenRouterOfficialPricingUnitPricingResponse;
 }
@@ -4411,10 +4415,10 @@ export namespace Admin {
   }
 
   /**
-   * @description 从 storage 缓存读取 OpenRouter 模型定价；缓存不存在、过期或 refresh=true 时由后端刷新。
+   * @description 从 storage 缓存读取 OpenRouter 模型标识、定价和上下文限制；缓存不存在、过期或 refresh=true 时由后端刷新。
    * @tags admin-billing
    * @name BillingOfficialPricingOpenrouterList
-   * @summary 管理员获取 OpenRouter 官方模型定价
+   * @summary 管理员获取 OpenRouter 官方模型目录
    * @request GET:/admin/billing/official-pricing/openrouter
    * @secure
    */

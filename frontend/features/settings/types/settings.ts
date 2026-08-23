@@ -18,6 +18,8 @@ export type ChatSettings = {
   showMessagePositionRail: boolean;
   showResponseOutline: boolean;
   markdownRender: boolean;
+  autoExpandThinking: boolean;
+  autoExpandToolCalls: boolean;
   autoGenerateTitle: boolean;
   autoGenerateLabels: boolean;
   deleteFilesByDefault: boolean;
