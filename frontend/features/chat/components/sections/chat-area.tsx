@@ -106,6 +106,7 @@ type ChatAreaProps = {
   starred: boolean;
   canOperateConversation: boolean;
   messages: ChatAreaMessage[];
+  messagesReadOnly?: boolean;
   busy: boolean;
   messageContentRef: React.RefObject<HTMLDivElement | null>;
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void;
@@ -277,6 +278,7 @@ function useStableEvent<Args extends unknown[], Return>(callback: (...args: Args
 const ChatMessageRow = React.memo(function ChatMessageRow({
   item,
   busy,
+  readOnly,
   reaction,
   onRetryUserMessage,
   onRetryAssistantMessage,
@@ -310,6 +312,7 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
 }: {
   item: ChatAreaMessage;
   busy: boolean;
+  readOnly: boolean;
   reaction: AssistantReaction;
   onRetryUserMessage: (message: ChatAreaMessage) => Promise<void> | void;
   onRetryAssistantMessage: (message: ChatAreaMessage) => Promise<void> | void;
@@ -400,6 +403,7 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
         onCopy={() => void onCopy()}
         copySucceeded={isCopied(copyKey)}
         attachmentContentLoader={attachmentContentLoader}
+        readOnly={readOnly}
         screenshotMeta={screenshotMeta}
       />
     );
@@ -434,6 +438,7 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
         showBillingCost={showBillingCost}
         billingDisplayCurrency={billingDisplayCurrency}
         billingDisplayUsdToCnyRate={billingDisplayUsdToCnyRate}
+        readOnly={readOnly}
         contentWidthClassName={contentWidthClassName}
         screenshotMeta={screenshotMeta}
       />
@@ -455,6 +460,7 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
   );
 }, (previous, next) => (
   previous.busy === next.busy &&
+  previous.readOnly === next.readOnly &&
   previous.reaction === next.reaction &&
   previous.markdownRender === next.markdownRender &&
   previous.autoExpandThinking === next.autoExpandThinking &&
@@ -485,6 +491,7 @@ export function ChatArea({
   starred,
   canOperateConversation,
   messages,
+  messagesReadOnly = false,
   busy,
   messageContentRef,
   onScroll,
@@ -668,6 +675,7 @@ export function ChatArea({
                     <ChatMessageRow
                       item={item}
                       busy={busy}
+                      readOnly={messagesReadOnly}
                       reaction={getReaction(item)}
                       onRetryUserMessage={stableOnRetryUserMessage}
                       onRetryAssistantMessage={stableOnRetryAssistantMessage}

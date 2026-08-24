@@ -92,6 +92,7 @@ type messageTraceRecorder struct {
 	cfg             config.Config
 	assistant       *model.Message
 	onEvent         func(string, map[string]interface{}) error
+	ephemeral       bool
 	process         *messageTraceDraft
 	tools           *messageTraceDraft
 	upstreamThink   *messageTraceDraft
@@ -211,6 +212,19 @@ func newMessageTraceRecorder(
 		assistant: assistant,
 		onEvent:   onEvent,
 	}
+}
+
+func newEphemeralMessageTraceRecorder(
+	service *Service,
+	ctx context.Context,
+	assistant *model.Message,
+	onEvent func(string, map[string]interface{}) error,
+) *messageTraceRecorder {
+	recorder := newMessageTraceRecorder(service, ctx, assistant, onEvent)
+	if recorder != nil {
+		recorder.ephemeral = true
+	}
+	return recorder
 }
 
 func (r *messageTraceRecorder) enabled() bool {
@@ -523,7 +537,7 @@ func (r *messageTraceRecorder) flushToolDraft(draft *messageTraceDraft) {
 		if r.service != nil && r.service.repo != nil {
 			r.enqueueDraftPersistence(draft, payloadJSON)
 		}
-	} else if r.cfg.ProcessTracePersistInflight && (r.toolLastPersist.IsZero() || now.Sub(r.toolLastPersist) >= toolTracePersistInterval) {
+	} else if !r.ephemeral && r.cfg.ProcessTracePersistInflight && (r.toolLastPersist.IsZero() || now.Sub(r.toolLastPersist) >= toolTracePersistInterval) {
 		if r.service != nil && r.service.repo != nil {
 			r.persistMessageTraceRow(r.ctx, draft, payloadJSON)
 			r.persistTraceEventRow(r.ctx, draft, payloadJSON)
@@ -853,7 +867,7 @@ func cloneTracePayload(payload map[string]interface{}) map[string]interface{} {
 // JSON payload is materialized before the goroutine starts so later live-event
 // reconciliation cannot mutate data being persisted in the background.
 func (r *messageTraceRecorder) enqueueDraftPersistence(draft *messageTraceDraft, payloadJSON string) {
-	if !r.enabled() || draft == nil || r.service == nil || r.service.repo == nil {
+	if !r.enabled() || r.ephemeral || draft == nil || r.service == nil || r.service.repo == nil {
 		return
 	}
 	r.persistQueueMu.Lock()
@@ -910,7 +924,7 @@ func (r *messageTraceRecorder) waitForPendingPersistence(ctx context.Context) {
 func (r *messageTraceRecorder) persistDraftBackground(draft *messageTraceDraft, payloadJSON string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if !r.enabled() || draft == nil {
+	if !r.enabled() || r.ephemeral || draft == nil {
 		return
 	}
 	r.persistMessageTraceRow(ctx, draft, payloadJSON)
@@ -923,6 +937,9 @@ func (r *messageTraceRecorder) persistDraftCtx(ctx context.Context, draft *messa
 	}
 	payloadJSON := tracePayloadJSON(draft.payload)
 	r.upsertSnapshotEvent(draft, payloadJSON)
+	if r.ephemeral {
+		return
+	}
 	if !force && !r.cfg.ProcessTracePersistInflight {
 		return
 	}
@@ -1034,6 +1051,9 @@ func (r *messageTraceRecorder) resetUpstreamThinkLiveBuffer() {
 }
 
 func (r *messageTraceRecorder) persistMessageTraceRow(ctx context.Context, draft *messageTraceDraft, payloadJSON string) {
+	if r == nil || r.ephemeral || r.service == nil || r.service.repo == nil || r.assistant == nil || draft == nil {
+		return
+	}
 	item := &model.MessageTrace{
 		MessageID:       r.assistant.ID,
 		ConversationID:  r.assistant.ConversationID,
@@ -1090,6 +1110,9 @@ func tracePayloadOmittedJSON(originalBytes int) string {
 }
 
 func (r *messageTraceRecorder) persistTraceEventRow(ctx context.Context, draft *messageTraceDraft, payloadJSON string) {
+	if r == nil || r.ephemeral || r.service == nil || r.service.repo == nil || r.assistant == nil || draft == nil {
+		return
+	}
 	item := &model.MessageTraceEventRow{
 		MessageID:       r.assistant.ID,
 		ConversationID:  r.assistant.ConversationID,
@@ -1190,12 +1213,13 @@ func (r *messageTraceRecorder) emitUpstreamThinkDelta(update upstreamThinkLiveUp
 		return
 	}
 	payload := map[string]interface{}{
-		"status":  r.upstreamThink.status,
-		"title":   r.upstreamThink.title,
-		"summary": r.upstreamThink.summary,
-		"stage":   r.upstreamThink.stage,
-		"roundID": r.upstreamThink.roundID,
-		"eventID": r.upstreamThink.eventID,
+		"status":    r.upstreamThink.status,
+		"title":     r.upstreamThink.title,
+		"summary":   r.upstreamThink.summary,
+		"stage":     r.upstreamThink.stage,
+		"roundID":   r.upstreamThink.roundID,
+		"eventID":   r.upstreamThink.eventID,
+		"startedAt": r.upstreamThink.startedAt,
 	}
 	if update.kind != "" {
 		payload["kind"] = update.kind
