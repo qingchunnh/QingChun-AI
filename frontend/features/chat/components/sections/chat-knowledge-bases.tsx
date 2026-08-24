@@ -162,7 +162,7 @@ export function ChatKnowledgeBases({
         </TooltipContent>
       </Tooltip>
 
-      <PopoverContent side="bottom" align="start" sideOffset={8} className="w-[min(22rem,calc(100vw-2rem))] p-1.5">
+      <PopoverContent side="bottom" align="start" sideOffset={8} className="w-[min(22rem,calc(100vw-2rem))] p-1.5" onOpenAutoFocus={(event) => event.preventDefault()}>
         <div className="flex items-center justify-between gap-3 px-2 pb-1.5 text-[11px] font-medium text-foreground/70">
           <span>{t("knowledgeBases")}</span>
           {selectedIDs.length > 0 ? (
