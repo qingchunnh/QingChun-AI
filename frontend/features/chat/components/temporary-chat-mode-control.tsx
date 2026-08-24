@@ -24,6 +24,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useMobileHeaderActionSlot } from "@/features/layouts/context/mobile-header-action-context";
 import { cn } from "@/lib/utils";
 
+// 当前已禁用临时对话。
+// 隐藏模式切换入口，并将直接访问 /chat?temporary=true 的请求重定向回普通聊天；
+// 显式标注 boolean 避免字面量类型收窄。后续计划迁移为后台动态开关，届时删除此常量。
+const TEMPORARY_CHAT_ENABLED: boolean = false;
+
 function TemporaryModeButton({
   active,
   layout,
@@ -94,6 +99,17 @@ export function TemporaryChatModeControl({
     }
     router.push(active ? "/chat" : "/chat?temporary=true");
   }, [active, requiresExitConfirmation, router]);
+
+  // 禁用临时对话时，把直接携带 ?temporary=true 的访问重定向回普通聊天。
+  React.useEffect(() => {
+    if (!TEMPORARY_CHAT_ENABLED && active) {
+      router.replace("/chat");
+    }
+  }, [active, router]);
+
+  if (!TEMPORARY_CHAT_ENABLED) {
+    return null;
+  }
 
   return (
     <>

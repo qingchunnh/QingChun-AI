@@ -18,6 +18,11 @@ import (
 
 const temporaryChatMaxRequestBytes = 8 << 20
 
+// 当前已禁用临时对话。
+// 使用 var 避免常量折叠导致 go vet 将 handler 主体判定为不可达代码。
+// 后续计划迁移为后台动态开关（chat:temporary_chat_enabled），届时删除此变量。
+var temporaryChatEnabled = false
+
 // StreamTemporaryChatMessage godoc
 // @Summary 流式发送临时对话消息
 // @Description 由浏览器提交完整纯文本上下文；服务端不创建会话、消息、运行或断线续传记录
@@ -31,6 +36,10 @@ const temporaryChatMaxRequestBytes = 8 << 20
 // @Failure 500 {object} ErrorDoc
 // @Router /temporary-chat/messages/stream [post]
 func (h *Handler) StreamTemporaryChatMessage(c *gin.Context) {
+	if !temporaryChatEnabled {
+		response.Error(c, http.StatusForbidden, "temporary chat is disabled")
+		return
+	}
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, temporaryChatMaxRequestBytes)
 	var req TemporaryChatMessageRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

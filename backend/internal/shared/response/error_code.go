@@ -269,6 +269,7 @@ var exactErrorSpecs = map[string]errorSpec{
 	"read webhook body failed":                                     {Code: "payment.invalid_webhook_body", Message: "invalid webhook body"},
 	"webhook body too large":                                       {Code: "payment.webhook_body_too_large", Message: "webhook body too large"},
 	"temporary chat context is too large":                          {Code: "temporary_chat.context_too_large", Message: "temporary chat context is too large"},
+	"temporary chat is disabled":                                   {Code: "temporary_chat.disabled", Message: "temporary chat is disabled"},
 	"invalid stripe signature":                                     {Code: "payment.invalid_signature", Message: "invalid stripe signature"},
 	"invalid stripe event":                                         {Code: "payment.invalid_event", Message: "invalid stripe event"},
 	"missing order_no":                                             {Code: "payment.order_no_required", Message: "order_no is required"},
