@@ -266,7 +266,6 @@ export function AppChatArea() {
     errorMsg,
     hasOlder,
     loadOlderMessages,
-    loadAllOlderMessages,
     messages,
     reload,
     replaceMessage,
@@ -929,10 +928,10 @@ export function AppChatArea() {
   const screenshotMessages = React.useMemo(
     () => ({
       emptySelection: tScreenshot("emptySelection"),
+      selectionLimitReached: tScreenshot("selectionLimitReached"),
       generating: tScreenshot("generating"),
       ready: tScreenshot("ready"),
       failed: tScreenshot("failed"),
-      loadLimitReached: tScreenshot("loadLimitReached"),
       tooLarge: tScreenshot("tooLarge"),
       downloaded: tScreenshot("downloaded"),
       copied: tScreenshot("copied"),
@@ -945,7 +944,6 @@ export function AppChatArea() {
     conversationID: actionConversationID || null,
     messageContentRef,
     conversationTitle: activeConversationTitle,
-    onLoadAllMessages: loadAllOlderMessages,
     messages: screenshotMessages,
   });
   const screenshotPreview = screenshot.preview;
@@ -1445,7 +1443,7 @@ export function AppChatArea() {
                   billingDisplayUsdToCnyRate={billingDisplayUsdToCnyRate}
                   splitRightInset={hasInlineArtifact}
                   contentWidthClassName={chatContentWidthClassName}
-                  onScreenshotFull={screenshot.captureFullConversation}
+                  onScreenshotLatest={screenshot.captureLatestMessages}
                   onScreenshotSelect={screenshot.startSelectionScreenshot}
                   screenshot={{
                     selectionMode: screenshot.selectionMode,
