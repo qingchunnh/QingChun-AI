@@ -111,7 +111,7 @@ function streamEventErrorToApiError(
   event: Extract<StreamMessageEvent, { type: "error" }>,
   fallback: string,
 ): ApiError {
-  return new ApiError(event.message || fallback, 502, event.debug, event.errorCode);
+  return new ApiError(event.message || fallback, event.status ?? 502, event.debug, event.errorCode);
 }
 
 function resolveMediaStatusLabel(
@@ -253,6 +253,11 @@ function branchScopeID(scope: BranchScope): string {
 function isSuccessfulBranchParentStatus(status: string | null | undefined): boolean {
   const normalized = status?.trim().toLowerCase() || "";
   return normalized === "success" || normalized === "interrupted";
+}
+
+function isFailedBranchParentStatus(status: string | null | undefined): boolean {
+  const normalized = status?.trim().toLowerCase() || "";
+  return ["error", "canceled", "cancelled", "blocked", "unavailable"].includes(normalized);
 }
 
 function branchScopeIsVisible(
@@ -475,6 +480,7 @@ export function useChatMessageSubmit({
   setDraft,
   setAttachments,
   releaseAttachments,
+  transferAttachments,
   getPendingExchanges,
   pendingExchanges,
   setPendingExchanges,
@@ -491,6 +497,7 @@ export function useChatMessageSubmit({
   flushStreamTextNow,
   flushUpstreamThinkNow,
   resetStreamBuffer,
+  setStreamTextSnapshot,
   startStream,
   activeGenerationRunsRef,
   activeGenerationRunsRevision,
@@ -525,6 +532,7 @@ export function useChatMessageSubmit({
   setDraft: React.Dispatch<React.SetStateAction<string>>;
   setAttachments: React.Dispatch<React.SetStateAction<PendingAttachment[]>>;
   releaseAttachments: (items: PendingAttachment[]) => void;
+  transferAttachments: (items: PendingAttachment[]) => void;
   getPendingExchanges: () => PendingExchangeMap;
   pendingExchanges: PendingExchangeMap;
   setPendingExchanges: React.Dispatch<React.SetStateAction<PendingExchangeMap>>;
@@ -541,6 +549,7 @@ export function useChatMessageSubmit({
   flushStreamTextNow: (exchangeKey: string) => void;
   flushUpstreamThinkNow: (exchangeKey: string) => void;
   resetStreamBuffer: (exchangeKey?: string) => void;
+  setStreamTextSnapshot: (exchangeKey: string, content: string) => void;
   startStream: (exchangeKey: string, runID?: string) => void;
   activeGenerationRunsRef?: React.RefObject<Set<string>>;
   activeGenerationRunsRevision: number;
@@ -560,14 +569,20 @@ export function useChatMessageSubmit({
   const optimisticMessageCountsRef = React.useRef(new Map<string, number>());
   const sendQueuedAfterCurrentRef = React.useRef(new Set<string>());
   const dispatchingQueuedSubmissionIDsRef = React.useRef(new Set<string>());
+  const settledQueuedSubmissionIDsRef = React.useRef(new Set<string>());
   const [queuedSubmissions, setQueuedSubmissions] = React.useState<QueuedChatSubmission[]>([]);
   const queuedSubmissionsRef = React.useRef<QueuedChatSubmission[]>([]);
+  React.useEffect(() => {
+    const queuedIDs = new Set(queuedSubmissions.map((submission) => submission.id));
+    for (const settledID of settledQueuedSubmissionIDsRef.current) {
+      if (!queuedIDs.has(settledID)) settledQueuedSubmissionIDsRef.current.delete(settledID);
+    }
+  }, [queuedSubmissions]);
   const isRunActive = React.useCallback((runID: string) => activeStreamsRef.current.has(runID), []);
   const {
     getStatus: getHiddenParentRunStatus,
     revision: hiddenParentRunStatusRevision,
   } = useHiddenQueuedParentRuns({
-    currentConversationScopeKey: conversationScopeKey,
     queuedParents: queuedSubmissions,
     getPendingExchanges,
     isRunActive,
@@ -879,6 +894,7 @@ export function useChatMessageSubmit({
       syncActiveRuns();
       if (resetComposer) {
         setDraft("");
+        transferAttachments(currentAttachments);
         setAttachments([]);
       }
       startStream(exchangeKey, clientRunID);
@@ -1134,6 +1150,9 @@ export function useChatMessageSubmit({
                 : current,
             );
             enqueueStreamText(exchangeKey, delta);
+          },
+          onTextSnapshot: (content) => {
+            setStreamTextSnapshot(exchangeKey, content);
           },
           onUsage: (event) => {
             updatePendingExchange(exchangeKey, (current) => ({
@@ -1423,7 +1442,7 @@ export function useChatMessageSubmit({
         if (assistantMessageSucceeded || completed.metadataRefreshHint?.trim() === "pending") {
           startMetadataRefresh(completed);
         }
-        releaseAttachments(effectiveAttachments);
+        releaseAttachments(currentAttachments);
         if (assistantMessageSucceeded) {
           notifyResponseCompletion({
             content: completed.assistantMessage.content,
@@ -1440,7 +1459,7 @@ export function useChatMessageSubmit({
         resetStreamBuffer(exchangeKey);
         if (streamAbortController.signal.aborted) {
           shouldKeepConversationLayout = true;
-          releaseAttachments(effectiveAttachments);
+          releaseAttachments(currentAttachments);
           updatePendingExchange(exchangeKey, (current) => ({
             ...current,
             assistantPending: false,
@@ -1455,7 +1474,7 @@ export function useChatMessageSubmit({
         if (error instanceof ApiError && error.errorCode === "content_moderation.blocked") {
           // UI already updated via onModerationBlocked; settle as a soft block with retry.
           shouldKeepConversationLayout = true;
-          releaseAttachments(effectiveAttachments);
+          releaseAttachments(currentAttachments);
           if (conversationScopeKeyRef.current === targetConversationScopeKey) {
             reload();
           }
@@ -1465,7 +1484,7 @@ export function useChatMessageSubmit({
         const errorDetails = resolveErrorDetails(error);
         const errorSummary = resolveErrorSummary(error, t("retryLater"));
         shouldKeepConversationLayout = true;
-        if (
+        const shouldRestoreAttachments =
           resetComposer &&
           restoreDraftOnFailure &&
           branchRunIsVisible(
@@ -1474,10 +1493,12 @@ export function useChatMessageSubmit({
             conversationScopeKeyRef.current,
             visibleBranchScopePathRef.current,
             visibleMessagesRef.current,
-          )
-        ) {
+          );
+        if (shouldRestoreAttachments) {
           setDraft(content);
           setAttachments(currentAttachments);
+        } else {
+          releaseAttachments(currentAttachments);
         }
         updatePendingExchange(exchangeKey, (current) => ({
           ...current,
@@ -1554,8 +1575,10 @@ export function useChatMessageSubmit({
       onConversationRunStarted,
       prependNewConversation,
       releaseAttachments,
+      transferAttachments,
       reload,
       resetStreamBuffer,
+      setStreamTextSnapshot,
       restoreDraftOnFailure,
       modelOptions,
       selectedToolIDs,
@@ -1664,6 +1687,7 @@ export function useChatMessageSubmit({
       ];
     });
     setDraft("");
+    transferAttachments(currentAttachments);
     setAttachments([]);
     return true;
   }, [
@@ -1682,6 +1706,7 @@ export function useChatMessageSubmit({
     selectedToolIDs,
     setAttachments,
     setDraft,
+    transferAttachments,
     uploading,
     visibleMessages,
   ]);
@@ -1858,6 +1883,64 @@ export function useChatMessageSubmit({
   }, [attachments, currentLeafMessage?.publicID, draft, enqueueSubmission, resumeGenerationActive, sending, submitMessage, visibleMessages]);
 
   React.useEffect(() => {
+    if (queuedSubmissions.length === 0) {
+      return;
+    }
+    const pending = Object.values(getPendingExchanges());
+    const failedRunIDs = new Set<string>();
+    const failedSubmissionIDs = new Set<string>();
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const submission of queuedSubmissions) {
+        if (failedSubmissionIDs.has(submission.id) || !submission.parentRunID) {
+          continue;
+        }
+        const parentStatus =
+          pending.find((exchange) => exchange.runID === submission.parentRunID)?.assistantStatus ??
+          combinedMessages.find(
+            (message) => message.role === "assistant" && message.runID === submission.parentRunID,
+          )?.status ??
+          getHiddenParentRunStatus(submission.parentRunID);
+        if (!failedRunIDs.has(submission.parentRunID) && !isFailedBranchParentStatus(parentStatus)) {
+          continue;
+        }
+        failedSubmissionIDs.add(submission.id);
+        failedRunIDs.add(submission.clientRunID);
+        changed = true;
+      }
+    }
+    const newlySettled = queuedSubmissions.filter(
+      (submission) =>
+        failedSubmissionIDs.has(submission.id) &&
+        !settledQueuedSubmissionIDsRef.current.has(submission.id),
+    );
+    if (newlySettled.length === 0) {
+      return;
+    }
+    for (const submission of newlySettled) {
+      settledQueuedSubmissionIDsRef.current.add(submission.id);
+      dispatchingQueuedSubmissionIDsRef.current.delete(submission.id);
+      sendQueuedAfterCurrentRef.current.delete(branchScopeID(submission));
+      releaseAttachments(submission.attachments);
+    }
+    setQueuedSubmissions((current) =>
+      current.filter((submission) => !failedSubmissionIDs.has(submission.id)),
+    );
+    toast.error(t("queuedParentFailed"), {
+      description: t("queuedParentFailedDescription"),
+    });
+  }, [
+    getHiddenParentRunStatus,
+    getPendingExchanges,
+    hiddenParentRunStatusRevision,
+    combinedMessages,
+    queuedSubmissions,
+    releaseAttachments,
+    t,
+  ]);
+
+  React.useEffect(() => {
     const currentBranchHasPendingServerGeneration = visibleMessages.some(
       (message) =>
         message.role === "assistant" &&
@@ -1910,6 +1993,15 @@ export function useChatMessageSubmit({
           exchange.runID === item.parentRunID &&
           branchScopesEqual(exchange, item),
       );
+      const parentStatus =
+        parentExchange?.assistantStatus ??
+        combinedMessages.find(
+          (message) => message.role === "assistant" && message.runID === item.parentRunID,
+        )?.status ??
+        getHiddenParentRunStatus(item.parentRunID);
+      if (isFailedBranchParentStatus(parentStatus)) {
+        return false;
+      }
       if (resolvePersistedPublicID(parentExchange?.assistantPublicID)) {
         return true;
       }
