@@ -309,7 +309,7 @@ function ChatMessagePositionRailComponent({
   const preview =
     typeof document !== "undefined" ? (
       <ChatMessagePositionPreview
-        item={previewItem}
+        item={previewItem ?? null}
         position={previewPosition}
         previewRef={previewRef}
         top={previewTop}

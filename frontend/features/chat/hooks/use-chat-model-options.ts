@@ -9,8 +9,7 @@ import type {
   ModelOptionControlType,
 } from "@/features/chat/types/chat-runtime";
 import { readLastUsedModel, writeLastUsedModel } from "@/features/chat/model/last-used-model";
-import type { SendShortcut } from "@/features/settings/types/settings";
-import { parseSendShortcut } from "@/features/settings/utils/chat-settings";
+import { parseSendShortcut, type SendShortcut } from "@/features/settings";
 import { getBillingConfig } from "@/shared/api/billing";
 import { listConversationRuns } from "@/shared/api/conversation";
 import type { ConversationOptions } from "@/shared/api/conversation.types";
@@ -136,7 +135,7 @@ function resolveNativeTools(raw: string): ModelNativeToolConfig[] {
     id: nativeToolID({ key, protocols: [], type: "", index }),
     key,
     protocol: "",
-    protocols: [],
+    protocols: [] as string[],
     type: "",
     label: key,
     enabled: true,
@@ -451,7 +450,7 @@ export function useChatModelOptions({
 
       const [models, modelOptionPolicy] = await Promise.all([
         listPublicModels(token),
-        getModelOptionPolicy(token).catch(() => null),
+        getModelOptionPolicy(token).catch((): null => null),
       ]);
       return { models, modelOptionPolicy };
     })().finally(() => {
@@ -501,8 +500,8 @@ export function useChatModelOptions({
         }
         const [catalog, billingConfig, nextMCPPolicy] = await Promise.all([
           loadModelCatalog(token),
-          getBillingConfig(token).catch(() => null),
-          getMCPPolicy(token).catch(() => null),
+          getBillingConfig(token).catch((): null => null),
+          getMCPPolicy(token).catch((): null => null),
         ]);
         if (cancelled) {
           return;
@@ -552,13 +551,16 @@ export function useChatModelOptions({
     const requestID = runModelRequestRef.current + 1;
     runModelRequestRef.current = requestID;
 
+    // 本次请求绑定的会话 ID（非空）。
+    const activeConversationID = normalizedConversationID;
+
     async function loadLatestRunModel() {
       const token = await resolveAccessToken();
       if (!token) {
         return;
       }
 
-      const runs = await listConversationRuns(token, normalizedConversationID, { page: 1, pageSize: 1 });
+      const runs = await listConversationRuns(token, activeConversationID, { page: 1, pageSize: 1 });
       if (cancelled || requestID !== runModelRequestRef.current || userSelectedModelRef.current) {
         return;
       }
@@ -567,7 +569,7 @@ export function useChatModelOptions({
       setSelectedPlatformModelName(latestRunModel || fallbackModel);
     }
 
-    void loadLatestRunModel().catch(() => undefined);
+    void loadLatestRunModel().catch((): undefined => undefined);
 
     return () => {
       cancelled = true;
