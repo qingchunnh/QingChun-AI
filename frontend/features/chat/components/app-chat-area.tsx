@@ -143,6 +143,7 @@ export function AppChatArea() {
   } = useSettingsChatPreferences();
   const items = useSidebarConversationField("items");
   const projects = useSidebarConversationField("projects");
+  const projectsLoading = useSidebarConversationField("projectsLoading");
   const prependNewConversation = useSidebarConversationField("prependNewConversation");
   const touchByPublicID = useSidebarConversationField("touchByPublicID");
   const renameByPublicID = useSidebarConversationField("renameByPublicID");
@@ -215,6 +216,7 @@ export function AppChatArea() {
     () => projects.find((item) => item.publicID === newConversationProjectID) ?? null,
     [newConversationProjectID, projects],
   );
+  const newConversationDefaultsPending = Boolean(newConversationProjectID && projectsLoading);
   const prependNewConversationInContext = React.useCallback(
     (platformModelName?: string) => prependNewConversation(platformModelName, newConversationProjectID || undefined),
     [newConversationProjectID, prependNewConversation],
@@ -270,6 +272,8 @@ export function AppChatArea() {
   } = useChatModelOptions({
     conversationPublicID: conversationID,
     conversationModel: currentConversation?.model ?? null,
+    newConversationDefaultModel: newConversationProject?.defaultModel ?? "",
+    newConversationDefaultsPending,
     resetToken: newConversationRevision,
   });
   const {
@@ -324,6 +328,7 @@ export function AppChatArea() {
     availableTools,
     toolsLoading,
     defaultToolIDs,
+    defaultToolsReady,
     onDefaultToolIDsChange,
   } = useChatMCPTools({
     mcpMaxSelectedTools,
@@ -331,6 +336,35 @@ export function AppChatArea() {
     setSelectedToolIDs,
   });
   const newConversationSelectionKey = `${newConversationRevision}:${newConversationProjectID || "unassigned"}`;
+  const warnedUnavailableProjectModelRef = React.useRef("");
+  React.useEffect(() => {
+    const configuredModel = newConversationProject?.defaultModel.trim() ?? "";
+    if (
+      conversationID ||
+      !configuredModel ||
+      modelsLoading ||
+      modelOptions.length === 0 ||
+      modelsErrorMsg.trim() ||
+      modelOptions.some((model) => model.platformModelName === configuredModel)
+    ) {
+      return;
+    }
+
+    const warningKey = `${newConversationSelectionKey}:${configuredModel}`;
+    if (warnedUnavailableProjectModelRef.current === warningKey) {
+      return;
+    }
+    warnedUnavailableProjectModelRef.current = warningKey;
+    toast.warning(t("projectDefaultModelUnavailable", { model: configuredModel }));
+  }, [
+    conversationID,
+    modelOptions,
+    modelsErrorMsg,
+    modelsLoading,
+    newConversationProject?.defaultModel,
+    newConversationSelectionKey,
+    t,
+  ]);
   const newConversationDefaultMCPToolIDs = React.useMemo(
     () => normalizeImageAttachmentProcessorSelection(
       filterAvailableMCPToolIDs(
@@ -355,11 +389,11 @@ export function AppChatArea() {
   const { onSelectedKnowledgeBasesChange, onSelectedSkillsChange, onSelectedToolsChange: applySelectedToolsChange } = useChatConversationDefaults({
     conversationID,
     contextKey: newConversationSelectionKey,
-    defaultsPending: Boolean(newConversationProjectID && !newConversationProject),
+    defaultsPending: newConversationDefaultsPending,
     defaultMCPToolIDs: newConversationDefaultMCPToolIDs,
     defaultSkillIDs: newConversationDefaultSkillIDs,
     defaultKnowledgeBaseIDs: newConversationDefaultKnowledgeBaseIDs,
-    toolsLoading,
+    mcpDefaultsPending: toolsLoading || !defaultToolsReady,
     setSelectedToolIDs,
     setSelectedSkills,
     setSelectedKnowledgeBaseIDs,
@@ -392,7 +426,14 @@ export function AppChatArea() {
     attachments,
     setAttachments,
     appendAttachmentsForKey,
+    temporary: temporaryMode,
   });
+
+  const onTemporaryAttachmentsConsumed = React.useCallback((items: typeof attachments) => {
+    transferAttachments(items);
+    const consumedIDs = new Set(items.map((item) => item.fileID));
+    setAttachments((current) => current.filter((item) => !consumedIDs.has(item.fileID)));
+  }, [setAttachments, transferAttachments]);
 
   const {
     currentLeafMessage,
@@ -460,7 +501,7 @@ export function AppChatArea() {
     return () => detachConversationRun(normalizedRunID);
   }, [detachConversationRun, registerConversationRun, resumingConversationID, resumingRunID]);
   const generating = sending;
-  const uploadDropDisabled = temporaryMode || loading || uploading;
+  const uploadDropDisabled = loading || uploading;
   const onStopActiveMessage = React.useCallback(() => {
     const visibleRunID = currentLeafMessage?.runID?.trim() || "";
     if (resumingRunID && visibleRunID === resumingRunID) {
@@ -637,7 +678,10 @@ export function AppChatArea() {
     selectedSkillIDs: temporarySelectedSkillIDs,
     selectedKnowledgeBaseIDs,
     htmlVisualPromptEnabled: htmlVisualPrompt.enabled,
+    attachments,
     onDraftChange: setDraft,
+    onAttachmentsConsumed: onTemporaryAttachmentsConsumed,
+    releaseAttachments,
   });
   const displayMessages = temporaryMode ? temporaryRuntime.messages : messagesWithInlineError;
   const artifactWorkspace = useChatArtifacts({
@@ -678,8 +722,8 @@ export function AppChatArea() {
     ragAvailabilityReason,
     sendShortcut,
     inputHeight,
-    attachments: temporaryMode ? EMPTY_LIST : attachments,
-    uploadingAttachments: temporaryMode ? EMPTY_LIST : uploadingAttachments,
+    attachments,
+    uploadingAttachments,
     modelOptions,
     billingDisplayCurrency,
     billingDisplayUsdToCnyRate,
@@ -697,7 +741,7 @@ export function AppChatArea() {
     defaultOptions: selectedModelDefaultOptions,
     modelOptionPolicy,
     modelLoading: modelsLoading,
-    dropActive: temporaryMode ? false : fileDragActive,
+    dropActive: fileDragActive,
     temporaryMode,
     onDraftChange: setDraft,
     onModelChange: setSelectedPlatformModelName,
@@ -783,15 +827,16 @@ export function AppChatArea() {
                   starred={activeConversationStarred}
                   canOperateConversation={temporaryMode ? false : canOperateConversation}
                   messages={displayMessages}
-                  messagesReadOnly={temporaryMode}
+                  attachmentContentLoader={temporaryMode ? temporaryRuntime.loadAttachmentContent : undefined}
+                  persistMessageFeedback={!temporaryMode}
                   busy={composerSending}
                   messageContentRef={messageContentRef}
                   onScroll={onScroll}
-                  onRetryUserMessage={onRetryUserMessage}
-                  onRetryAssistantMessage={onRetryAssistantMessage}
-                  onContinueAssistantMessage={onContinueAssistantMessage}
-                  onEditAssistantMessage={onEditAssistantMessage}
-                  onEditUserMessage={onEditUserMessage}
+                  onRetryUserMessage={temporaryMode ? temporaryRuntime.onRetryUserMessage : onRetryUserMessage}
+                  onRetryAssistantMessage={temporaryMode ? temporaryRuntime.onRetryAssistantMessage : onRetryAssistantMessage}
+                  onContinueAssistantMessage={temporaryMode ? undefined : onContinueAssistantMessage}
+                  onEditAssistantMessage={temporaryMode ? temporaryRuntime.onEditAssistantMessage : onEditAssistantMessage}
+                  onEditUserMessage={temporaryMode ? temporaryRuntime.onEditUserMessage : onEditUserMessage}
                   onForkMessage={temporaryMode ? undefined : onForkMessage}
                   modelOptions={modelOptions}
                   selectedPlatformModelName={selectedPlatformModelName}

@@ -929,6 +929,7 @@ export interface ConversationProjectResponse {
   createdAt: string;
   defaultKnowledgeBaseIDs: string[];
   defaultMCPToolIDs: number[];
+  defaultModel: string;
   defaultSkillIDs: number[];
   description: string;
   icon: string;
@@ -1074,6 +1075,8 @@ export interface CreateConversationProjectRequest {
   defaultKnowledgeBaseIDs: string[];
   /** @maxItems 128 */
   defaultMCPToolIDs?: number[];
+  /** @maxLength 128 */
+  defaultModel?: string;
   /** @maxItems 128 */
   defaultSkillIDs?: number[];
   /** @maxLength 255 */
@@ -1390,6 +1393,21 @@ export interface Envelope {
   requestId?: string;
 }
 
+export interface FileEmbeddingSkipResponse {
+  fileID: string;
+  reason: string;
+}
+
+export interface FileEmbeddingSubmissionResponse {
+  skipped: FileEmbeddingSkipResponse[];
+  submittedFileIDs: string[];
+}
+
+export interface FileEmbeddingSubmissionResponseDoc {
+  data: FileEmbeddingSubmissionResponse;
+  errorMsg: string;
+}
+
 export interface FileListResponse {
   quota: StorageQuotaResponse;
   results: FileObjectResponse[];
@@ -1403,6 +1421,7 @@ export interface FileListResponseDoc {
 
 export interface FileObjectResponse {
   sha256: string;
+  canVectorize: boolean;
   chunkCount: number;
   createdAt: string;
   detectedMIME: string;
@@ -1424,9 +1443,11 @@ export interface FileObjectResponse {
   sizeBytes: number;
   status: string;
   updatedAt: string;
+  vectorizationReason: string;
 }
 
 export interface FileProcessingStatusResponse {
+  canVectorize: boolean;
   chunkCount: number;
   completedAt: string | null;
   detectedMIME: string;
@@ -1447,6 +1468,7 @@ export interface FileProcessingStatusResponse {
   ragReason: string;
   startedAt: string | null;
   updatedAt: string;
+  vectorizationReason: string;
 }
 
 export interface FileUpdateResponseDoc {
@@ -1663,6 +1685,21 @@ export interface KnowledgeBaseFileDataResponse {
   file: KnowledgeBaseFileResponse;
 }
 
+export interface KnowledgeBaseFileEmbeddingSkipResponse {
+  fileID: string;
+  reason: string;
+}
+
+export interface KnowledgeBaseFileEmbeddingSubmissionResponse {
+  skipped: KnowledgeBaseFileEmbeddingSkipResponse[];
+  submittedFileIDs: string[];
+}
+
+export interface KnowledgeBaseFileEmbeddingSubmissionResponseDoc {
+  data: KnowledgeBaseFileEmbeddingSubmissionResponse;
+  errorMsg: string;
+}
+
 export interface KnowledgeBaseFileMutationDataResponse {
   updated: boolean;
 }
@@ -1686,9 +1723,12 @@ export interface KnowledgeBaseFileProcessingSnapshotResponse {
 }
 
 export interface KnowledgeBaseFileProcessingStatusResponse {
+  canVectorize: boolean;
   chunkCount: number;
   detectedMIME: string;
+  embedError: string;
   embedStatus: string;
+  extractStatus: string;
   fileCategory: string;
   fileID: string;
   processing: boolean;
@@ -1696,13 +1736,17 @@ export interface KnowledgeBaseFileProcessingStatusResponse {
   processingStatus: string;
   ragOptOut: boolean;
   updatedAt: string;
+  vectorizationReason: string;
 }
 
 export interface KnowledgeBaseFileResponse {
+  canVectorize: boolean;
   chunkCount: number;
   createdAt: string;
   detectedMIME: string;
+  embedError: string;
   embedStatus: string;
+  extractStatus: string;
   fileCategory: string;
   fileID: string;
   fileName: string;
@@ -1713,6 +1757,7 @@ export interface KnowledgeBaseFileResponse {
   ragOptOut: boolean;
   sizeBytes: number;
   updatedAt: string;
+  vectorizationReason: string;
 }
 
 export interface KnowledgeBaseFileResponseDoc {
@@ -3303,6 +3348,22 @@ export interface StorageQuotaResponse {
   userID: number;
 }
 
+export interface SubmitFileEmbeddingsRequest {
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  fileIDs: string[];
+}
+
+export interface SubmitPlatformFileEmbeddingsRequest {
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  fileIDs: string[];
+}
+
 export interface SubscribeRequest {
   /**
    * @min 1
@@ -3365,9 +3426,14 @@ export interface SyncUpstreamModelsResponse {
   createdUpstreamModels: number;
   existingUpstreamModels: number;
   inactivatedModels: number;
+  protectedUpstreamModels: number;
+  reactivatedModels: number;
   skippedUpstreamModels: number;
+  snapshotID: string;
   syncedModels: UpstreamSyncModelResponse[];
   totalUpstream: number;
+  unchangedUpstreamModels: number;
+  updatedUpstreamModels: number;
 }
 
 export interface SyncUpstreamModelsResponseDoc {
@@ -3501,6 +3567,8 @@ export interface UpdateConversationProjectRequest {
   defaultKnowledgeBaseIDs: string[];
   /** @maxItems 128 */
   defaultMCPToolIDs?: number[];
+  /** @maxLength 128 */
+  defaultModel?: string;
   /** @maxItems 128 */
   defaultSkillIDs?: number[];
   /** @maxLength 255 */
@@ -3895,6 +3963,15 @@ export interface UpstreamModelResponse {
   weight: number;
 }
 
+export interface UpstreamModelSyncPlanResponse {
+  addedModels: string[];
+  inactivatedModels: string[];
+  protectedModels: string[];
+  reactivatedModels: string[];
+  unchangedModels: string[];
+  updatedModels: string[];
+}
+
 export interface UpstreamRemoteModelResponse {
   alreadyBound: boolean;
   alreadySynced: boolean;
@@ -3910,6 +3987,8 @@ export interface UpstreamRemoteModelResponse {
 
 export interface UpstreamRemoteModelsResponse {
   items: UpstreamRemoteModelResponse[];
+  snapshotID: string;
+  syncPlan: UpstreamModelSyncPlanResponse;
   total: number;
 }
 
@@ -3948,8 +4027,11 @@ export interface UpstreamSyncModelResponse {
   bindingCode: string;
   created: boolean;
   kindsJSON: string;
+  protected: boolean;
+  reactivated: boolean;
   status: string;
   suggestedProtocol: string;
+  updated: boolean;
   upstreamModelName: string;
 }
 
@@ -4190,8 +4272,23 @@ export interface UserAuthEventListResponseDoc {
   errorMsg: string;
 }
 
+export interface UserDailyActivityItem {
+  date: string;
+  requestCount: number;
+  tokenUsage: number;
+}
+
+export interface UserDailyActivityListResponseDoc {
+  data: UserDailyActivityItem[];
+  errorMsg: string;
+}
+
 export interface UserDataResponse {
   user: AdminUserResponse;
+}
+
+export interface UserErrorDoc {
+  errorMsg: string;
 }
 
 export interface UserListResponseDoc {
@@ -5088,6 +5185,22 @@ export namespace Admin {
     };
     export type RequestHeaders = {};
     export type ResponseBody = KnowledgeBaseFileResponseDoc;
+  }
+
+  /**
+   * @description 为管理员选中的平台资料提交向量化任务，最多100个；重复提交会幂等跳过
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesEmbeddingsCreate
+   * @summary 批量提交平台资料向量化
+   * @request POST:/admin/knowledge-bases/files/embeddings
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesEmbeddingsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = SubmitPlatformFileEmbeddingsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileEmbeddingSubmissionResponseDoc;
   }
 
   /**
@@ -6085,7 +6198,7 @@ export namespace Admin {
   }
 
   /**
-   * @description 调用上游 models 接口，仅返回可导入预览，不直接落库
+   * @description 调用上游 models 接口，返回可导入模型与目录变更预览，不直接落库
    * @tags llm
    * @name LlmUpstreamsModelsRemoteList
    * @summary 管理员预览上游远程模型
@@ -6104,7 +6217,7 @@ export namespace Admin {
   }
 
   /**
-   * @description 调用上游 models 接口写入上游真实模型清单，不自动绑定平台模型
+   * @description 调用上游 models 接口获取完整目录，原子更新远端管理模型可用状态，不删除平台模型或路由配置
    * @tags llm
    * @name LlmUpstreamsModelsSyncCreate
    * @summary 管理员同步上游模型目录
@@ -6116,7 +6229,12 @@ export namespace Admin {
       /** 上游ID */
       id: number;
     };
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      /** 确认允许空模型目录对账 */
+      allow_empty?: boolean;
+      /** 用户确认的远端目录快照标识 */
+      expected_snapshot?: string;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = SyncUpstreamModelsResponseDoc;
@@ -8661,6 +8779,22 @@ export namespace Files {
   }
 
   /**
+   * @description 为当前用户已完成文本提取的文件提交向量化任务，最多100个；重复提交会幂等跳过
+   * @tags chat
+   * @name EmbeddingsCreate
+   * @summary 批量提交指定文件向量化
+   * @request POST:/files/embeddings
+   * @secure
+   */
+  export namespace EmbeddingsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = SubmitFileEmbeddingsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = FileEmbeddingSubmissionResponseDoc;
+  }
+
+  /**
    * @description 一次查询当前用户多个文件的处理状态
    * @tags chat
    * @name ProcessingStatusesCreate
@@ -9619,7 +9753,7 @@ export namespace Skills {
 
 export namespace TemporaryChat {
   /**
-   * @description 由浏览器提交完整纯文本上下文；服务端不创建会话、消息、运行或断线续传记录
+   * @description 由浏览器提交完整上下文和可选请求级附件；服务端不创建会话、消息、运行、文件或断线续传记录
    * @tags chat
    * @name MessagesStreamCreate
    * @summary 流式发送临时对话消息
@@ -9666,5 +9800,24 @@ export namespace User {
     export type RequestBody = UserSettingsPatchSettingsRequest;
     export type RequestHeaders = {};
     export type ResponseBody = UserSettingsResponseDoc;
+  }
+
+  /**
+   * @description 查询当前用户按计费归属日聚合的模型请求数与 token 消耗，逐日补零
+   * @tags user
+   * @name StatsActivityList
+   * @summary 查询每日活跃度
+   * @request GET:/user/stats/activity
+   * @secure
+   */
+  export namespace StatsActivityList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 统计天数(默认365，最大366) */
+      days?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UserDailyActivityListResponseDoc;
   }
 }
