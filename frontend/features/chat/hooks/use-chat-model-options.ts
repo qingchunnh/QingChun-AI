@@ -611,6 +611,12 @@ export function useChatModelOptions({
       if (!token || cancelled || userSelectedModelRef.current) {
         return;
       }
+      // 项目默认优先于“上次使用的模型”。
+      const projectDefault = (newConversationDefaultModel ?? "").trim();
+      if (projectDefault && availableModels.some((item) => item.platformModelName === projectDefault)) {
+        setSelectedPlatformModelName(projectDefault);
+        return;
+      }
       if (keepLastUsedModel) {
         const lastUsedModel = readLastUsedModel();
         if (lastUsedModel && availableModels.some((item) => item.platformModelName === lastUsedModel)) {
