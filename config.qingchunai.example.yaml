@@ -67,7 +67,8 @@ storage:
     force_path_style: true
 
 geoip:
-  provider: ipwhois
+  provider: mmdb
+  database_path: "/app/data/geoip/GeoLite2-City.mmdb"
 
 observability:
   tracing:
