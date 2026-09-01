@@ -171,6 +171,139 @@ func TestGenerationStreamRegistryKeepsNonTextReplayInSequenceOrder(t *testing.T)
 	}
 }
 
+func TestGenerationStreamRegistryOrdersTextAndUpstreamThinkingSnapshots(t *testing.T) {
+	registry := newGenerationStreamRegistry(newTestGenerationStreamStore(), generationStreamOptions{
+		Retention:        time.Minute,
+		ActiveTTL:        time.Minute,
+		MaxEvents:        8,
+		SubscriberBuffer: 4,
+	})
+	ctx := context.Background()
+	runID := EnsureMessageGenerationRunID("")
+	registry.register(ctx, runID, 7, "conv_test", func() {})
+	defer registry.finish(ctx, runID)
+	registry.publish(ctx, runID, map[string]interface{}{"type": "file_proc", "message": "preparing"})
+	registry.publish(ctx, runID, map[string]interface{}{
+		"type":    "upstream_think_delta",
+		"status":  "streaming",
+		"roundID": " round_1 ",
+		"delta":   "thought",
+	})
+	registry.publish(ctx, runID, map[string]interface{}{"type": "delta", "delta": "answer"})
+	registry.publish(ctx, runID, map[string]interface{}{"type": "usage", "output_tokens": 1})
+
+	replay, _, unsubscribe, ok := registry.subscribe(ctx, 7, runID, 0, true)
+	if !ok {
+		t.Fatal("expected subscription")
+	}
+	defer unsubscribe()
+	if len(replay) != 4 ||
+		replay[0].Seq != 1 || replay[0].Payload["type"] != "file_proc" ||
+		replay[1].Seq != 2 || replay[1].Payload["type"] != "upstream_think_delta" ||
+		replay[1].Payload["contentMarkdown"] != "thought" || replay[1].Payload["roundID"] != "round_1" ||
+		replay[2].Seq != 3 || replay[2].Payload["type"] != "delta" || replay[2].Payload["replace"] != true ||
+		replay[3].Seq != 4 || replay[3].Payload["type"] != "usage" {
+		t.Fatalf("unexpected ordered snapshot replay: %+v", replay)
+	}
+}
+
+func TestGenerationStreamRegistryUpstreamThinkingSnapshotTracksTerminalMetadata(t *testing.T) {
+	registry := newGenerationStreamRegistry(newTestGenerationStreamStore(), generationStreamOptions{
+		Retention:        time.Minute,
+		ActiveTTL:        time.Minute,
+		MaxEvents:        8,
+		SubscriberBuffer: 4,
+	})
+	ctx := context.Background()
+	runID := EnsureMessageGenerationRunID("")
+	registry.register(ctx, runID, 7, "conv_test", func() {})
+	defer registry.finish(ctx, runID)
+	registry.publish(ctx, runID, map[string]interface{}{
+		"type":    "upstream_think_delta",
+		"status":  "streaming",
+		"roundID": "round_1",
+		"delta":   "thought",
+	})
+	registry.publish(ctx, runID, map[string]interface{}{
+		"type":    "upstream_think_delta",
+		"status":  "completed",
+		"roundID": "round_1",
+	})
+
+	replay, _, unsubscribe, ok := registry.subscribe(ctx, 7, runID, 0, true)
+	if !ok {
+		t.Fatal("expected subscription")
+	}
+	defer unsubscribe()
+	if len(replay) != 1 || replay[0].Seq != 2 ||
+		replay[0].Payload["type"] != "upstream_think_delta" ||
+		replay[0].Payload["contentMarkdown"] != "thought" ||
+		replay[0].Payload["status"] != "completed" {
+		t.Fatalf("unexpected terminal upstream-thinking snapshot: %+v", replay)
+	}
+}
+
+func TestGenerationStreamRegistryRestoresCompleteUpstreamThinkingBeyondReplayWindow(t *testing.T) {
+	store := newTestGenerationStreamStore()
+	registry := newGenerationStreamRegistry(store, generationStreamOptions{
+		Retention:        time.Minute,
+		ActiveTTL:        time.Minute,
+		MaxEvents:        generationStreamMaxEvents,
+		SubscriberBuffer: 4,
+	})
+	ctx := context.Background()
+	runID := EnsureMessageGenerationRunID("")
+	registry.register(ctx, runID, 7, "conv_test", func() {})
+	defer registry.finish(ctx, runID)
+
+	var expected strings.Builder
+	for i := 0; i < generationStreamMaxEvents+100; i++ {
+		delta := fmt.Sprintf("thought-%04d\n", i)
+		expected.WriteString(delta)
+		registry.publish(ctx, runID, map[string]interface{}{
+			"type":      "upstream_think_delta",
+			"status":    "streaming",
+			"stage":     "think",
+			"roundID":   "round_1",
+			"eventID":   "event_1",
+			"startedAt": "2026-08-31T00:00:00Z",
+			"delta":     delta,
+		})
+	}
+
+	replay, events, unsubscribe, ok := registry.subscribe(ctx, 7, runID, 0, true)
+	if !ok {
+		t.Fatal("expected subscription")
+	}
+	defer unsubscribe()
+	if len(replay) != 1 {
+		t.Fatalf("expected one upstream-thinking checkpoint, got %d events", len(replay))
+	}
+	checkpoint := replay[0]
+	if checkpoint.Payload["type"] != "upstream_think_delta" ||
+		checkpoint.Payload["contentMarkdown"] != expected.String() ||
+		checkpoint.Payload["roundID"] != "round_1" ||
+		checkpoint.Seq != generationStreamMaxEvents+100 {
+		t.Fatalf("unexpected upstream-thinking checkpoint: %+v", checkpoint)
+	}
+
+	registry.publish(ctx, runID, map[string]interface{}{
+		"type":    "upstream_think_delta",
+		"status":  "streaming",
+		"roundID": "round_1",
+		"eventID": "event_1",
+		"delta":   "continued",
+	})
+	select {
+	case event := <-events:
+		if event.Payload["type"] != "upstream_think_delta" || event.Payload["delta"] != "continued" {
+			t.Fatalf("unexpected live upstream-thinking event: %+v", event)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for live upstream-thinking event")
+	}
+}
+
 func TestGenerationStreamRegistryRejectsTextReplayWithoutSnapshot(t *testing.T) {
 	store := newTestGenerationStreamStore()
 	registry := newGenerationStreamRegistry(store, generationStreamOptions{
@@ -450,6 +583,9 @@ func TestGenerationStreamSanitizesOversizedTracePayload(t *testing.T) {
 			"output_detail":  largeOutput,
 			"output_text":    largeOutput,
 			"output_preview": "short result",
+			"output_presentation": map[string]interface{}{
+				"text": "## Structured result\n\n- first item",
+			},
 		}},
 	})
 	if err != nil {
@@ -503,13 +639,16 @@ func TestGenerationStreamSanitizesOversizedTracePayload(t *testing.T) {
 		t.Fatalf("expected one sanitized tool call, got %#v", parsedTrace.ToolCalls)
 	}
 	call := parsedTrace.ToolCalls[0]
-	if traceInt64(call["output_size"]) != int64(len(largeOutput)) ||
-		traceInt64(call["output_detail_size"]) != int64(len(largeOutput)) ||
+	if traceInt64(call["output_detail_size"]) != int64(len(largeOutput)) ||
 		traceInt64(call["output_text_size"]) != int64(len(largeOutput)) {
 		t.Fatalf("expected output size metadata in sanitized payload, got %#v", call)
 	}
 	if _, ok := call["output_detail"]; ok {
 		t.Fatalf("expected oversized output detail to be removed, got %#v", call)
+	}
+	presentation, ok := call["output_presentation"].(map[string]interface{})
+	if !ok || getTraceString(presentation["text"]) != "## Structured result\n\n- first item" {
+		t.Fatalf("expected semantic output presentation to survive stream sanitization, got %#v", call)
 	}
 }
 
@@ -562,15 +701,19 @@ type testGenerationStreamStore struct {
 }
 
 type testGenerationStream struct {
-	userID         uint
-	conversationID string
-	canceled       bool
-	activeUntil    time.Time
-	nextSeq        int64
-	events         []repository.GenerationStreamMessage
-	textContent    strings.Builder
-	textSeq        int64
-	expiresAt      time.Time
+	userID                uint
+	conversationID        string
+	canceled              bool
+	activeUntil           time.Time
+	nextSeq               int64
+	events                []repository.GenerationStreamMessage
+	textContent           strings.Builder
+	textSeq               int64
+	upstreamThinkContent  strings.Builder
+	upstreamThinkSeq      int64
+	upstreamThinkRoundID  string
+	upstreamThinkMetadata string
+	expiresAt             time.Time
 }
 
 func newTestGenerationStreamStore() *testGenerationStreamStore {
@@ -672,11 +815,45 @@ func (s *testGenerationStreamStore) AppendGenerationStreamEvent(_ context.Contex
 		_, _ = item.textContent.WriteString(input.TextDelta)
 		item.textSeq = item.nextSeq
 	}
+	if input.UpstreamThink != nil {
+		roundID := strings.TrimSpace(input.UpstreamThink.RoundID)
+		if roundID == "" {
+			roundID = item.upstreamThinkRoundID
+		}
+		if roundID != "" && item.upstreamThinkRoundID != "" && roundID != item.upstreamThinkRoundID {
+			item.upstreamThinkContent.Reset()
+		}
+		if input.UpstreamThink.Replace {
+			item.upstreamThinkContent.Reset()
+			_, _ = item.upstreamThinkContent.WriteString(input.UpstreamThink.ContentMarkdown)
+		} else {
+			_, _ = item.upstreamThinkContent.WriteString(input.UpstreamThink.Delta)
+		}
+		item.upstreamThinkSeq = item.nextSeq
+		item.upstreamThinkRoundID = roundID
+		item.upstreamThinkMetadata = input.UpstreamThink.MetadataJSON
+	}
 	if maxEvents > 0 && int64(len(item.events)) > maxEvents {
 		item.events = append([]repository.GenerationStreamMessage(nil), item.events[len(item.events)-int(maxEvents):]...)
 	}
 	item.expiresAt = time.Now().Add(ttl)
 	return record, nil
+}
+
+func (s *testGenerationStreamStore) GetGenerationStreamUpstreamThinkSnapshot(_ context.Context, runID string) (repository.GenerationStreamUpstreamThinkSnapshot, bool, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.cleanupLocked()
+	item, ok := s.items[runID]
+	if !ok || item.upstreamThinkSeq <= 0 {
+		return repository.GenerationStreamUpstreamThinkSnapshot{}, false, nil
+	}
+	return repository.GenerationStreamUpstreamThinkSnapshot{
+		Seq:             item.upstreamThinkSeq,
+		RoundID:         item.upstreamThinkRoundID,
+		ContentMarkdown: item.upstreamThinkContent.String(),
+		MetadataJSON:    item.upstreamThinkMetadata,
+	}, true, nil
 }
 
 func (s *testGenerationStreamStore) GetGenerationStreamTextSnapshot(_ context.Context, runID string) (repository.GenerationStreamTextSnapshot, bool, error) {
@@ -730,6 +907,10 @@ func (s *testGenerationStreamStore) ResetGenerationStreamEvents(_ context.Contex
 		item.events = nil
 		item.textContent.Reset()
 		item.textSeq = 0
+		item.upstreamThinkContent.Reset()
+		item.upstreamThinkSeq = 0
+		item.upstreamThinkRoundID = ""
+		item.upstreamThinkMetadata = ""
 	}
 	return nil
 }

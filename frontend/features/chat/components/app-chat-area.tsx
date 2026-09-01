@@ -150,6 +150,7 @@ export function AppChatArea() {
   const upsertConversation = useSidebarConversationField("upsertConversation");
   const {
     cancelResumedGeneration,
+    conversationPublicID: messageDataConversationID,
     loading,
     loadingOlder,
     errorMsg,
@@ -159,7 +160,6 @@ export function AppChatArea() {
     reload,
     replaceMessage,
     resumingActivityLabel,
-    resumingConversationID,
     resumingRunID,
   } = useChatData(conversationID, {
     activeGenerationRunsRef,
@@ -491,15 +491,6 @@ export function AppChatArea() {
     resumingActivityLabel,
     resumingRunID,
   });
-  React.useEffect(() => {
-    const normalizedConversationID = resumingConversationID.trim();
-    const normalizedRunID = resumingRunID.trim();
-    if (!normalizedConversationID || !normalizedRunID) {
-      return;
-    }
-    registerConversationRun(normalizedRunID, normalizedConversationID);
-    return () => detachConversationRun(normalizedRunID);
-  }, [detachConversationRun, registerConversationRun, resumingConversationID, resumingRunID]);
   const generating = sending;
   const uploadDropDisabled = loading || uploading;
   const onStopActiveMessage = React.useCallback(() => {
@@ -711,9 +702,13 @@ export function AppChatArea() {
 
   const composerSending = temporaryMode ? temporaryRuntime.sending : generating;
   const composerConversationMode = temporaryMode ? temporaryRuntime.messages.length > 0 : isConversationMode;
+  const composerLoading =
+    !temporaryMode &&
+    Boolean(conversationID) &&
+    (loading || messageDataConversationID !== conversationID);
   const chatInputProps = {
     draft,
-    loading: temporaryMode ? false : loading,
+    loading: composerLoading,
     sending: composerSending,
     uploading: temporaryMode ? false : uploading,
     isConversationMode: composerConversationMode,
@@ -743,6 +738,7 @@ export function AppChatArea() {
     modelLoading: modelsLoading,
     dropActive: fileDragActive,
     temporaryMode,
+    autoFocusKey: conversationID ?? `${conversationKey}:${newConversationRevision}`,
     onDraftChange: setDraft,
     onModelChange: setSelectedPlatformModelName,
     onModelCatalogRefresh: refreshModelCatalogForComposer,
@@ -829,6 +825,7 @@ export function AppChatArea() {
                   messages={displayMessages}
                   attachmentContentLoader={temporaryMode ? temporaryRuntime.loadAttachmentContent : undefined}
                   persistMessageFeedback={!temporaryMode}
+                  allowFullToolResults={!temporaryMode}
                   busy={composerSending}
                   messageContentRef={messageContentRef}
                   onScroll={onScroll}

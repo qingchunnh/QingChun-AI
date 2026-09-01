@@ -44,10 +44,7 @@ import { ChatMCP } from "@/features/chat/components/sections/chat-mcp";
 import { ChatModelConfig } from "@/features/chat/components/sections/chat-model-config";
 import { ChatModelPicker } from "@/features/chat/components/sections/chat-model-picker";
 import { ChatMentionMenuPortal } from "@/features/chat/components/shared/chat-mention-menu";
-import {
-  type ChatMentionMenuKind,
-  useChatMentionMenu,
-} from "@/features/chat/hooks/use-chat-mention-menu";
+import { useChatMentionMenu } from "@/features/chat/hooks/use-chat-mention-menu";
 import {
   type SpeechInputErrorCode,
   useChatSpeechInput,
@@ -130,6 +127,7 @@ type ChatInputProps = {
   modelDisabled?: boolean;
   dropActive?: boolean;
   temporaryMode?: boolean;
+  autoFocusKey: string;
   onDraftChange: (value: string) => void;
   onModelChange: (platformModelName: string) => void;
   onModelCatalogRefresh?: () => void | Promise<void>;
@@ -286,6 +284,7 @@ function ChatInputComponent({
   modelDisabled = false,
   dropActive = false,
   temporaryMode = false,
+  autoFocusKey,
   onDraftChange,
   onModelChange,
   onModelCatalogRefresh,
@@ -341,6 +340,7 @@ function ChatInputComponent({
   const inputGroupRef = React.useRef<HTMLDivElement | null>(null);
   const inputGroupMeasureRef = React.useRef<HTMLDivElement | null>(null);
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
+  const lastAutoFocusKeyRef = React.useRef("");
   const markdownPreviewRef = React.useRef<HTMLDivElement | null>(null);
   const attachmentScrollFadeRef = useScrollFadeFallbackRef<HTMLDivElement>();
   const composingRef = React.useRef(false);
@@ -388,6 +388,21 @@ function ChatInputComponent({
       setMarkdownPreview(false);
     }
   }, [hasDraftText]);
+
+  React.useEffect(() => {
+    if (loading || lastAutoFocusKeyRef.current === autoFocusKey) {
+      return;
+    }
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      return;
+    }
+    lastAutoFocusKeyRef.current = autoFocusKey;
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      return;
+    }
+    textarea.focus({ preventScroll: true });
+  }, [autoFocusKey, loading]);
 
   React.useLayoutEffect(() => {
     const node = inputGroupMeasureRef.current;
@@ -455,19 +470,24 @@ function ChatInputComponent({
   const hasComposerAttachments = attachments.length > 0 || uploadingAttachments.length > 0;
   const showSelectedSkills = selectedSkills.length > 0 && !isMediaMode;
   const {
-    activeIndex: mentionActiveIndex,
+    activeRowKey: mentionActiveRowKey,
+    activeTab: mentionActiveTab,
     handleBlur: handleMentionBlur,
     handleChange: handleMentionChange,
     handleFocus: handleMentionFocus,
     handleKeyDown: handleMentionKeyDown,
+    handleListScroll: handleMentionListScroll,
     handleSelectionChange: handleMentionSelectionChange,
     menuID: mentionMenuID,
     menuLayout: mentionMenuLayout,
     menuRef: mentionMenuRef,
     menuReady: mentionMenuReady,
     open: showMentionMenu,
-    sections: mentionSections,
+    rows: mentionRows,
     select: selectMentionItem,
+    selectTab: selectMentionTab,
+    showTabBar: showMentionTabBar,
+    tabs: mentionTabs,
   } = useChatMentionMenu({
     attachments,
     availableTools,
@@ -503,15 +523,6 @@ function ChatInputComponent({
       });
     },
   });
-  const mentionSectionOffsets = React.useMemo(() => {
-    const offsets = new Map<ChatMentionMenuKind, number>();
-    let offset = 0;
-    for (const section of mentionSections) {
-      offsets.set(section.kind, offset);
-      offset += section.items.length;
-    }
-    return offsets;
-  }, [mentionSections]);
   const onSelectUploadTool = React.useCallback(() => {
     fileInputRef.current?.click();
   }, []);
@@ -850,22 +861,26 @@ function ChatInputComponent({
           ) : null}
 
           <ChatMentionMenuPortal
-            activeIndex={mentionActiveIndex}
+            activeRowKey={mentionActiveRowKey}
+            activeTab={mentionActiveTab}
             menuID={mentionMenuID}
             menuLayout={mentionMenuLayout}
             menuRef={mentionMenuRef}
             menuReady={mentionMenuReady}
             open={showMentionMenu}
-            sectionOffsets={mentionSectionOffsets}
-            sections={mentionSections}
+            rows={mentionRows}
+            showTabBar={showMentionTabBar}
+            tabs={mentionTabs}
             t={tComposer}
+            onListScroll={handleMentionListScroll}
             onSelect={selectMentionItem}
+            onSelectTab={selectMentionTab}
           />
 
           <InputGroupTextarea
             ref={textareaRef}
             value={draft}
-            disabled={loading || uploading}
+            disabled={loading}
             readOnly={speechInput.active}
             placeholder={dropActive ? tChat("attachments.dropTitle") : speechInput.placeholder}
             rows={1}
