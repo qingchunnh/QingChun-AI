@@ -85,6 +85,7 @@ func (h *Handler) StreamTemporaryChatMessage(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	input.UsageAuthorization = authorization
 	stopAuthorizationRenewal := h.startUsageAuthorizationRenewal(authorization)
 	defer stopAuthorizationRenewal()
 
@@ -127,7 +128,7 @@ func (h *Handler) StreamTemporaryChatMessage(c *gin.Context) {
 		}
 		if result != nil && result.IsModerationBlocked() {
 			if !result.ModerationTerminalEmitted() && c.Request.Context().Err() == nil {
-				_ = writeEvent(moderationBlockedStreamPayload(result))
+				_ = writeEvent(moderationBlockedStreamPayload(result, authorization))
 			}
 			h.recordTemporaryChatAuditAsync(c, req, len(input.Attachments), "blocked")
 			return
@@ -150,7 +151,7 @@ func (h *Handler) StreamTemporaryChatMessage(c *gin.Context) {
 	}
 	if result.IsModerationBlocked() {
 		if !result.ModerationTerminalEmitted() {
-			_ = writeEvent(moderationBlockedStreamPayload(result))
+			_ = writeEvent(moderationBlockedStreamPayload(result, authorization))
 		}
 		h.recordTemporaryChatAuditAsync(c, req, len(input.Attachments), "blocked")
 		return
