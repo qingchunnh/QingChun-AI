@@ -30,7 +30,7 @@ export function normalizeTheme(value: string | null | undefined): Theme {
 }
 
 export function normalizeThemePreset(value: string | null | undefined): ThemePreset {
-  return value === "azure" || value === "cobalt" || value === "graphite" || value === "lagoon" || value === "ink" || value === "ochre" || value === "sepia" ? value : "default";
+  return value === "default" || value === "azure" || value === "cobalt" || value === "graphite" || value === "lagoon" || value === "ink" || value === "ochre" || value === "sepia" ? value : "graphite";
 }
 
 function applyTheme(theme: Theme, systemTheme: "light" | "dark", preset: ThemePreset) {
@@ -48,10 +48,10 @@ export function ThemeProvider({
   children: React.ReactNode;
 }) {
   const [theme, setThemeState] = React.useState<Theme>("system");
-  const [preset, setPresetState] = React.useState<ThemePreset>("default");
+  const [preset, setPresetState] = React.useState<ThemePreset>("graphite");
   const [systemTheme, setSystemTheme] = React.useState<"light" | "dark">("light");
   const themeRef = React.useRef<Theme>("system");
-  const presetRef = React.useRef<ThemePreset>("default");
+  const presetRef = React.useRef<ThemePreset>("graphite");
 
   React.useEffect(() => {
     const initialSystemTheme = resolveSystemTheme();
@@ -118,7 +118,7 @@ export function useTheme(): ThemeContextValue {
   if (!context) {
     return {
       theme: "system" as Theme,
-      preset: "default" as ThemePreset,
+      preset: "graphite" as ThemePreset,
       setTheme: () => undefined,
       setPreset: () => undefined,
       resolvedTheme: "light" as const,

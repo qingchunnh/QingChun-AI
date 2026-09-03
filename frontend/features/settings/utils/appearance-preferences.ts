@@ -79,7 +79,7 @@ export function readLocalAppearancePreferences(): AppearancePreferences {
   if (typeof window === "undefined") {
     return {
       theme: "system",
-      preset: "default",
+      preset: "graphite",
       chatFont: "default",
       chatFontWeight: "regular",
       fontSize: "standard",
@@ -93,7 +93,7 @@ export function readLocalAppearancePreferences(): AppearancePreferences {
   const storedFontSize = window.localStorage.getItem(FONT_SIZE_STORAGE_KEY);
   return {
     theme: isTheme(storedTheme) ? storedTheme : "system",
-    preset: isThemePreset(storedPreset) ? storedPreset : "default",
+    preset: isThemePreset(storedPreset) ? storedPreset : "graphite",
     chatFont: isChatFontOption(storedChatFont) ? storedChatFont : "default",
     chatFontWeight: isChatFontWeightOption(storedChatFontWeight) ? storedChatFontWeight : "regular",
     fontSize: isFontSizeOption(storedFontSize) ? storedFontSize : "standard",

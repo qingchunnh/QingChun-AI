@@ -167,7 +167,7 @@ export function SettingsGeneral() {
   const activeThemeMode = themeRuntimeReady
     ? ((theme as ThemeMode | undefined) ?? "system")
     : "system";
-  const activeThemePreset = themeRuntimeReady ? preset : "default";
+  const activeThemePreset = themeRuntimeReady ? preset : "graphite";
 
   React.useEffect(() => {
     if (viewer?.initialUsernameRequired && !initialUsernameToastShownRef.current) {
