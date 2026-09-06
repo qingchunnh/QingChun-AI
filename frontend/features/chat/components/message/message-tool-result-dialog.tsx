@@ -51,9 +51,10 @@ function prepareJSONResult(value: string): { value: string; large: boolean } | n
   }
 }
 
-function resultViewerHeight(value: string, multiple: boolean): number {
+function resultViewerHeight(value: string, multiple: boolean): string {
+  const maxHeight = multiple ? "36svh, 320px" : "58svh, 560px";
   if (value.length > INLINE_JSON_FORMAT_LIMIT) {
-    return multiple ? 280 : 480;
+    return `min(${maxHeight})`;
   }
   let lineCount = 1;
   for (const character of value) {
@@ -61,7 +62,7 @@ function resultViewerHeight(value: string, multiple: boolean): number {
       lineCount += 1;
     }
   }
-  return Math.min(multiple ? 280 : 480, Math.max(160, lineCount * 20 + 40));
+  return `min(${Math.max(160, lineCount * 20 + 40)}px, ${maxHeight})`;
 }
 
 export function MessageToolResultDialog({
@@ -175,7 +176,7 @@ export function MessageToolResultDialog({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="flex max-h-[min(86svh,760px)] w-[calc(100vw-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[720px]"
+          className="flex max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] flex-col gap-0 overflow-hidden p-0 sm:max-h-[min(92vh,760px)] sm:w-full sm:max-w-[800px] md:max-w-[900px]"
           onCloseAutoFocus={() => {
             setDetail(null);
             setLoading(false);
@@ -219,7 +220,7 @@ export function MessageToolResultDialog({
                         className="resize-none border-border/60 bg-muted/20 dark:bg-muted/20"
                       />
                     ) : (
-                      <pre className="max-h-[min(60svh,32rem)] min-w-0 overflow-auto whitespace-pre rounded-md border border-border/60 bg-muted/25 p-3 font-mono text-xs leading-5 text-foreground/86">
+                      <pre className="max-h-[min(58svh,35rem)] min-w-0 overflow-auto whitespace-pre rounded-md border border-border/60 bg-muted/25 p-3 font-mono text-xs leading-5 text-foreground/86">
                         <code>{section.value}</code>
                       </pre>
                     )}
