@@ -51,18 +51,8 @@ function prepareJSONResult(value: string): { value: string; large: boolean } | n
   }
 }
 
-function resultViewerHeight(value: string, multiple: boolean): string {
-  const maxHeight = multiple ? "36svh, 320px" : "58svh, 520px";
-  if (value.length > INLINE_JSON_FORMAT_LIMIT) {
-    return `min(${maxHeight})`;
-  }
-  let lineCount = 1;
-  for (const character of value) {
-    if (character === "\n") {
-      lineCount += 1;
-    }
-  }
-  return `min(${Math.max(160, lineCount * 20 + 40)}px, ${maxHeight})`;
+function resultViewerHeight(multiple: boolean): string {
+  return multiple ? "min(36svh, 320px)" : "min(58svh, 520px)";
 }
 
 export function MessageToolResultDialog({
@@ -215,14 +205,14 @@ export function MessageToolResultDialog({
                         value={section.editorValue}
                         readOnly
                         showFormatAction={false}
-                        height={resultViewerHeight(section.editorValue, sections.length > 1)}
+                        height={resultViewerHeight(sections.length > 1)}
                         wordWrap={section.largeJSON ? "off" : "on"}
                         className="resize-none border-border/60 bg-muted/20 dark:bg-muted/20"
                       />
                     ) : (
                       <pre
                         className="min-w-0 overflow-auto whitespace-pre rounded-md border border-border/60 bg-muted/25 p-3 font-mono text-xs leading-5 text-foreground/86"
-                        style={{ maxHeight: resultViewerHeight(section.value, sections.length > 1) }}
+                        style={{ maxHeight: resultViewerHeight(sections.length > 1) }}
                       >
                         <code>{section.value}</code>
                       </pre>
