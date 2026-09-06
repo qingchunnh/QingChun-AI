@@ -4303,7 +4303,7 @@ definitions:
         maxLength: 128
         type: string
       options:
-        additionalProperties: true
+        additionalProperties: {}
         type: object
       parentMessagePublicID:
         maxLength: 32
@@ -7196,7 +7196,7 @@ definitions:
         maxLength: 128
         type: string
       options:
-        additionalProperties: true
+        additionalProperties: {}
         type: object
       parentMessagePublicID:
         maxLength: 32
@@ -7925,7 +7925,7 @@ definitions:
         maxLength: 128
         type: string
       options:
-        additionalProperties: true
+        additionalProperties: {}
         type: object
       selectedToolIDs:
         items:
@@ -9904,7 +9904,7 @@ info:
   contact: {}
   description: DEEIX Chat 后端 API 文档
   title: DEEIX Chat API
-  version: "0.4.0"
+  version: "0.4.1"
 paths:
   /admin/announcements:
     get:

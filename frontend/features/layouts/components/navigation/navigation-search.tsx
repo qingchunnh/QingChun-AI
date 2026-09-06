@@ -341,7 +341,7 @@ export function NavigationSearch({
         onOpenAutoFocus: isMobile ? (event) => event.preventDefault() : undefined,
       }}
       className={cn(
-        "h-auto w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] overflow-hidden rounded-lg border border-border/60 bg-background p-0 transition-[max-width] duration-200 ease-out sm:w-full",
+        "h-auto w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-border/60 bg-background p-0 transition-[max-width] duration-200 ease-out sm:w-[calc(100vw-2rem)]",
         previewPaneEnabled ? "md:max-w-5xl" : "sm:max-w-xl lg:max-w-2xl",
       )}
     >
