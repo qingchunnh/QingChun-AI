@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 import { getConversationToolCallDetail } from "@/shared/api/conversation";
 import type { ConversationToolCallDetailDTO } from "@/shared/api/conversation.types";
 import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
@@ -51,8 +52,8 @@ function prepareJSONResult(value: string): { value: string; large: boolean } | n
   }
 }
 
-function resultViewerHeight(value: string, multiple: boolean): string {
-  const maxHeight = multiple ? "36svh, 320px" : "58svh, 560px";
+function resultViewerHeight(value: string): string {
+  const maxHeight = "36svh, 320px";
   if (value.length > INLINE_JSON_FORMAT_LIMIT) {
     return `min(${maxHeight})`;
   }
@@ -176,7 +177,7 @@ export function MessageToolResultDialog({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="flex max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] flex-col gap-0 overflow-hidden p-0 sm:max-h-[min(92vh,760px)] sm:w-full sm:max-w-[800px] md:max-w-[900px]"
+          className="flex h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] flex-col gap-0 overflow-hidden p-0 sm:h-[min(92vh,760px)] sm:w-full sm:max-w-[800px] md:max-w-[900px]"
           onCloseAutoFocus={() => {
             setDetail(null);
             setLoading(false);
@@ -190,9 +191,14 @@ export function MessageToolResultDialog({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-2">
+          <div
+            className={cn(
+              "min-h-0 flex-1 px-5 py-2",
+              sections.length > 1 ? "overflow-y-auto" : "flex flex-col overflow-hidden",
+            )}
+          >
             {loading || waitingForDetail ? (
-              <div className="flex min-h-36 items-center justify-center rounded-md bg-muted/20">
+              <div className="flex min-h-36 flex-1 items-center justify-center rounded-md bg-muted/20">
                 <Spinner label={t("loadingFullResult")} className="size-4 text-muted-foreground" />
               </div>
             ) : loadFailed ? (
@@ -200,9 +206,20 @@ export function MessageToolResultDialog({
                 {t("fullResultLoadFailed")}
               </p>
             ) : sections.length > 0 ? (
-              <div className="space-y-3">
+              <div
+                className={cn(
+                  "min-h-0 flex-1",
+                  sections.length > 1 ? "space-y-3" : "flex flex-col",
+                )}
+              >
                 {sections.map((section) => (
-                  <section key={section.key} className="space-y-1.5">
+                  <section
+                    key={section.key}
+                    className={cn(
+                      "space-y-1.5",
+                      sections.length === 1 && "flex min-h-0 flex-1 flex-col",
+                    )}
+                  >
                     {sections.length > 1 ? (
                       <h3 className="text-xs font-medium text-muted-foreground">{section.label}</h3>
                     ) : null}
@@ -215,12 +232,17 @@ export function MessageToolResultDialog({
                         value={section.editorValue}
                         readOnly
                         showFormatAction={false}
-                        height={resultViewerHeight(section.editorValue, sections.length > 1)}
+                        height={sections.length === 1 ? "100%" : resultViewerHeight(section.editorValue)}
                         wordWrap={section.largeJSON ? "off" : "on"}
                         className="resize-none border-border/60 bg-muted/20 dark:bg-muted/20"
                       />
                     ) : (
-                      <pre className="max-h-[min(58svh,35rem)] min-w-0 overflow-auto whitespace-pre rounded-md border border-border/60 bg-muted/25 p-3 font-mono text-xs leading-5 text-foreground/86">
+                      <pre
+                        className={cn(
+                          "min-w-0 overflow-auto whitespace-pre rounded-md border border-border/60 bg-muted/25 p-3 font-mono text-xs leading-5 text-foreground/86",
+                          sections.length === 1 ? "min-h-0 flex-1" : "max-h-[min(36svh,320px)]",
+                        )}
+                      >
                         <code>{section.value}</code>
                       </pre>
                     )}
@@ -228,7 +250,7 @@ export function MessageToolResultDialog({
                 ))}
               </div>
             ) : (
-              <p className="flex min-h-36 items-center justify-center rounded-md bg-muted/20 text-xs text-muted-foreground">
+              <p className="flex min-h-36 flex-1 items-center justify-center rounded-md bg-muted/20 text-xs text-muted-foreground">
                 {t("fullResultEmpty")}
               </p>
             )}
