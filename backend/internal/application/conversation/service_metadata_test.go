@@ -118,7 +118,7 @@ func TestParseGeneratedConversationLabelsHandlesLooseJSON(t *testing.T) {
 
 func TestConversationTitleFromFirstUserMessage(t *testing.T) {
 	cases := map[string]string{
-		"  这是一条很长的第一条用户消息，用来测试标题截断  ":        "这是一条很长的第一条用户消息，用来测试标题截断",
+		"  这是一条很长的第一条用户消息，用来测试标题截断  ":                     "这是一条很长的第一条用户消息，用来测试标题截断",
 		"  一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三  ": "一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十",
 		"\n\nhello   world   from   DEEIX\n": "hello world from DEEIX",
 		"\"简短标题\"":                           "简短标题",
