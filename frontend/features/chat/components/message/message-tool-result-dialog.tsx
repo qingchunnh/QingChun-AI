@@ -52,7 +52,7 @@ function prepareJSONResult(value: string): { value: string; large: boolean } | n
 }
 
 function resultViewerHeight(multiple: boolean): string {
-  return multiple ? "min(36svh, 280px)" : "min(58svh, 480px)";
+  return multiple ? "min(36svh, 280px)" : "min(68svh, 480px)";
 }
 
 export function MessageToolResultDialog({
