@@ -52,7 +52,7 @@ function prepareJSONResult(value: string): { value: string; large: boolean } | n
 }
 
 function resultViewerHeight(multiple: boolean): string {
-  return multiple ? "min(36svh, 320px)" : "min(58svh, 520px)";
+  return multiple ? "min(36svh, 280px)" : "min(58svh, 480px)";
 }
 
 export function MessageToolResultDialog({
@@ -166,7 +166,7 @@ export function MessageToolResultDialog({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="flex max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] flex-col gap-0 overflow-hidden p-0 sm:max-h-[min(92vh,760px)] sm:w-full sm:max-w-[800px] md:max-w-[900px]"
+          className="flex max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] flex-col gap-0 overflow-hidden p-0 sm:max-h-[min(92vh,760px)] sm:w-full sm:max-w-[720px]"
           onCloseAutoFocus={() => {
             setDetail(null);
             setLoading(false);
