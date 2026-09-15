@@ -441,6 +441,7 @@ export function AppChatArea() {
     onEditUserMessage,
     onContinueAssistantMessage,
     onForkMessage,
+    onDeleteMessage,
     onRetryAssistantMessage,
     onRetryUserMessage,
     onSendMessage,
@@ -834,6 +835,7 @@ export function AppChatArea() {
                   onEditAssistantMessage={temporaryMode ? temporaryRuntime.onEditAssistantMessage : onEditAssistantMessage}
                   onEditUserMessage={temporaryMode ? temporaryRuntime.onEditUserMessage : onEditUserMessage}
                   onForkMessage={temporaryMode ? undefined : onForkMessage}
+                  onDeleteMessage={temporaryMode ? undefined : onDeleteMessage}
                   modelOptions={modelOptions}
                   selectedPlatformModelName={selectedPlatformModelName}
                   onModelChange={setSelectedPlatformModelName}

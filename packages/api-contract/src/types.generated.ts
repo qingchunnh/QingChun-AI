@@ -1922,6 +1922,16 @@ export interface MessageBillingCostResponse {
   pricingSnapshotJSON: string;
 }
 
+export interface MessageDeleteResponse {
+  deleted: boolean;
+  reparentedMessageCount: number;
+}
+
+export interface MessageDeleteResponseDoc {
+  data: MessageDeleteResponse;
+  errorMsg: string;
+}
+
 export interface MessageFeedbackResponse {
   messageID: number;
   messagePublicID: string;
@@ -2190,6 +2200,7 @@ export interface ModelPricingResponse {
   cacheReadNanousdPerMTokens: number;
   cacheReadUSDPerMTokens: number;
   cacheWriteNanousdPerMTokens: number;
+  cacheWritePriceBasis?: "direct" | "anthropic_5m";
   cacheWriteUSDPerMTokens: number;
   callNanousdPerCall: number;
   callUSDPerCall: number;
@@ -2430,16 +2441,27 @@ export interface OpenRouterOfficialPricingItemResponse {
   pricing: OpenRouterOfficialPricingUnitPricingResponse;
 }
 
+export interface OpenRouterOfficialPricingOverrideResponse {
+  completion: string;
+  inputCacheRead: string;
+  inputCacheWrite: string;
+  minPromptTokens: number;
+  prompt: string;
+}
+
 export interface OpenRouterOfficialPricingResponseDoc {
   data: OpenRouterOfficialPricingDataResponse;
   errorMsg: string;
 }
 
 export interface OpenRouterOfficialPricingUnitPricingResponse {
+  cacheWritePriceBasis: "direct" | "anthropic_5m";
   completion: string;
   inputCacheRead: string;
   inputCacheWrite: string;
+  overrides?: OpenRouterOfficialPricingOverrideResponse[];
   prompt: string;
+  unsupportedFields?: string[];
 }
 
 export interface PasswordResetCompleteRequest {
@@ -2824,6 +2846,8 @@ export interface PublicModelListResponseDoc {
 }
 
 export interface PublicModelPricingResponse {
+  cacheWrite1hMultiplier: number;
+  cacheWrite5mMultiplier: number;
   cacheReadUSDPerMTokens: number;
   cacheWriteUSDPerMTokens: number;
   callUSDPerCall: number;
@@ -3842,6 +3866,7 @@ export interface UpsertMemoryResponse {
 export interface UpsertModelPricingRequest {
   /** @min 0 */
   cacheReadUSDPerMTokens: number;
+  cacheWritePriceBasis?: "direct" | "anthropic_5m";
   /** @min 0 */
   cacheWriteUSDPerMTokens: number;
   /** @min 0 */
@@ -4689,7 +4714,7 @@ export namespace Admin {
   }
 
   /**
-   * @description 从 storage 缓存读取 OpenRouter 模型标识、定价和上下文限制；缓存不存在、过期或 refresh=true 时由后端刷新。
+   * @description 从 storage 缓存读取 OpenRouter 模型标识、基础定价、输入 token 阶梯覆盖和上下文限制；无法映射到当前 token 计费模型的附加字段会在 unsupportedFields 中标记，快速配置会忽略这些字段并继续导入可识别的 token 价格。由原生工具计费负责的按次字段（例如 web_search）会被忽略。
    * @tags admin-billing
    * @name BillingOfficialPricingOpenrouterList
    * @summary 管理员获取 OpenRouter 官方模型目录
@@ -8567,6 +8592,27 @@ export namespace Conversations {
     export type RequestBody = SendMessageRequest;
     export type RequestHeaders = {};
     export type ResponseBody = string;
+  }
+
+  /**
+   * @description 删除会话中任意位置的一条消息；其子消息将重接到被删消息的父消息上，后续消息保留并向前衔接。会话第一条消息与生成中的消息不允许删除
+   * @tags chat
+   * @name MessagesDelete
+   * @summary 删除指定消息
+   * @request DELETE:/conversations/{id}/messages/{message_id}
+   * @secure
+   */
+  export namespace MessagesDelete {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+      /** 消息 public_id */
+      messageId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MessageDeleteResponseDoc;
   }
 
   /**

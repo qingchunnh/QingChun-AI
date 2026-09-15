@@ -827,7 +827,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "从 storage 缓存读取 OpenRouter 模型标识、定价和上下文限制；缓存不存在、过期或 refresh=true 时由后端刷新。",
+                "description": "从 storage 缓存读取 OpenRouter 模型标识、基础定价、输入 token 阶梯覆盖和上下文限制；无法映射到当前 token 计费模型的附加字段会在 unsupportedFields 中标记，快速配置会忽略这些字段并继续导入可识别的 token 价格。由原生工具计费负责的按次字段（例如 web_search）会被忽略。",
                 "consumes": [
                     "application/json"
                 ],
@@ -8567,6 +8567,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/AuthErrorDoc"
                         }
                     },
+                    "423": {
+                        "description": "Locked",
+                        "schema": {
+                            "$ref": "#/definitions/AuthErrorDoc"
+                        }
+                    },
                     "429": {
                         "description": "Too Many Requests",
                         "schema": {
@@ -8867,6 +8873,12 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/AuthErrorDoc"
+                        }
+                    },
+                    "423": {
+                        "description": "Locked",
                         "schema": {
                             "$ref": "#/definitions/AuthErrorDoc"
                         }
@@ -11034,6 +11046,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/ConversationErrorDoc"
                         }
                     },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/ConversationErrorDoc"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -11143,6 +11161,74 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ConversationErrorDoc"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/ConversationErrorDoc"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ConversationErrorDoc"
+                        }
+                    }
+                }
+            }
+        },
+        "/conversations/{id}/messages/{message_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "删除会话中任意位置的一条消息；其子消息将重接到被删消息的父消息上，后续消息保留并向前衔接。会话第一条消息与生成中的消息不允许删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "删除指定消息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "会话 public_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "消息 public_id",
+                        "name": "message_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/MessageDeleteResponseDoc"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ConversationErrorDoc"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/ConversationErrorDoc"
                         }
@@ -20777,6 +20863,36 @@ const docTemplate = `{
                 }
             }
         },
+        "MessageDeleteResponse": {
+            "type": "object",
+            "required": [
+                "deleted",
+                "reparentedMessageCount"
+            ],
+            "properties": {
+                "deleted": {
+                    "type": "boolean"
+                },
+                "reparentedMessageCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "MessageDeleteResponseDoc": {
+            "type": "object",
+            "required": [
+                "data",
+                "errorMsg"
+            ],
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/MessageDeleteResponse"
+                },
+                "errorMsg": {
+                    "type": "string"
+                }
+            }
+        },
         "MessageFeedbackResponse": {
             "type": "object",
             "required": [
@@ -21739,6 +21855,13 @@ const docTemplate = `{
                 "cacheWriteNanousdPerMTokens": {
                     "type": "integer"
                 },
+                "cacheWritePriceBasis": {
+                    "type": "string",
+                    "enum": [
+                        "direct",
+                        "anthropic_5m"
+                    ]
+                },
                 "cacheWriteUSDPerMTokens": {
                     "type": "number"
                 },
@@ -22554,6 +22677,33 @@ const docTemplate = `{
                 }
             }
         },
+        "OpenRouterOfficialPricingOverrideResponse": {
+            "type": "object",
+            "required": [
+                "completion",
+                "inputCacheRead",
+                "inputCacheWrite",
+                "minPromptTokens",
+                "prompt"
+            ],
+            "properties": {
+                "completion": {
+                    "type": "string"
+                },
+                "inputCacheRead": {
+                    "type": "string"
+                },
+                "inputCacheWrite": {
+                    "type": "string"
+                },
+                "minPromptTokens": {
+                    "type": "integer"
+                },
+                "prompt": {
+                    "type": "string"
+                }
+            }
+        },
         "OpenRouterOfficialPricingResponseDoc": {
             "type": "object",
             "required": [
@@ -22572,12 +22722,20 @@ const docTemplate = `{
         "OpenRouterOfficialPricingUnitPricingResponse": {
             "type": "object",
             "required": [
+                "cacheWritePriceBasis",
                 "completion",
                 "inputCacheRead",
                 "inputCacheWrite",
                 "prompt"
             ],
             "properties": {
+                "cacheWritePriceBasis": {
+                    "type": "string",
+                    "enum": [
+                        "direct",
+                        "anthropic_5m"
+                    ]
+                },
                 "completion": {
                     "type": "string"
                 },
@@ -22587,8 +22745,20 @@ const docTemplate = `{
                 "inputCacheWrite": {
                     "type": "string"
                 },
+                "overrides": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/OpenRouterOfficialPricingOverrideResponse"
+                    }
+                },
                 "prompt": {
                     "type": "string"
+                },
+                "unsupportedFields": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -23632,6 +23802,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "cacheReadUSDPerMTokens",
+                "cacheWrite1hMultiplier",
+                "cacheWrite5mMultiplier",
                 "cacheWriteUSDPerMTokens",
                 "callUSDPerCall",
                 "currency",
@@ -23644,6 +23816,12 @@ const docTemplate = `{
             ],
             "properties": {
                 "cacheReadUSDPerMTokens": {
+                    "type": "number"
+                },
+                "cacheWrite1hMultiplier": {
+                    "type": "number"
+                },
+                "cacheWrite5mMultiplier": {
                     "type": "number"
                 },
                 "cacheWriteUSDPerMTokens": {
@@ -26734,6 +26912,13 @@ const docTemplate = `{
                 "cacheReadUSDPerMTokens": {
                     "type": "number",
                     "minimum": 0
+                },
+                "cacheWritePriceBasis": {
+                    "type": "string",
+                    "enum": [
+                        "direct",
+                        "anthropic_5m"
+                    ]
                 },
                 "cacheWriteUSDPerMTokens": {
                     "type": "number",
