@@ -95,6 +95,10 @@ const ENABLE_QUICK_MEMORY_PIN = false;
 // messages. Flip to `true` to re-enable the button.
 const ENABLE_CONTINUE_REPLY = false;
 
+// Feature flag: delete-message button is hidden below user and assistant
+// messages. Flip to `true` to re-enable the button.
+const ENABLE_MESSAGE_DELETE = false;
+
 export type AssistantReaction = "up" | "down" | null;
 
 type MessageTimestampLabel = {
@@ -455,7 +459,7 @@ export function UserMessageMeta({
             )}
           </MetaIconButton>
           {/* 根消息（parentPublicID 为空）后端禁止删除，前端直接不展示入口。 */}
-          {onDelete && hasPersistedMessage && item.parentPublicID ? (
+          {ENABLE_MESSAGE_DELETE && onDelete && hasPersistedMessage && item.parentPublicID ? (
             <DeleteMessageButton
               disabled={messagePending}
               label={t("deleteMessage")}
@@ -1096,7 +1100,7 @@ export function AssistantMessageMeta({
   const canContinue = Boolean(canRetry && !busy && item.status === "interrupted");
   const canFork = Boolean(canRetry && onFork);
   // 根消息（parentPublicID 为空）后端禁止删除，前端直接不展示入口。
-  const canDelete = Boolean(canRetry && !busy && onDelete && item.parentPublicID);
+  const canDelete = Boolean(ENABLE_MESSAGE_DELETE && canRetry && !busy && onDelete && item.parentPublicID);
   const canShowBranchNavigator = Boolean(showBranchNavigator && item.branchNavigator);
   const hasTokenUsage = Boolean(
     (item.inputTokens ?? 0) > 0 ||
