@@ -580,14 +580,11 @@ function RemoteModelsDialog({
   }, [permissionGroupsError, resolveErrorMessage, t]);
 
   React.useEffect(() => {
+    setPermissionGroupIDs([]);
     if (!open) {
-      setPermissionGroupIDs([]);
       setSyncConfirmationOpen(false);
-      return;
     }
-    const defaultGroup = permissionGroups.find((group) => group.isDefault);
-    setPermissionGroupIDs(defaultGroup ? [defaultGroup.id] : []);
-  }, [open, permissionGroups]);
+  }, [open]);
 
   function setDraftPlatformModelName(name: string, platformModelName: string) {
     setDraftPlatformModelNames((prev) => new Map(prev).set(name, platformModelName));
