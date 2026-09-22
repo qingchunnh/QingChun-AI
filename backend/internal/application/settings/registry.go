@@ -130,7 +130,7 @@ var settingSpecs = []settingSpec{
 		Validate: integerValue(), Apply: applyField(func(c *config.Config) *int { return &c.MaxContextMessages }, toInt)},
 	{Namespace: "chat", Key: "context_max_turns", ValueType: "int", Default: "48", Description: "最大对话轮次",
 		Validate: integerValue(), Apply: applyField(func(c *config.Config) *int { return &c.ContextMaxTurns }, toInt)},
-	{Namespace: "chat", Key: "ui_components_enabled", ValueType: "bool", Default: "true", Description: "是否向模型注入交互式组件目录（deeix-ui 卡片、对比表、图表）",
+	{Namespace: "chat", Key: "ui_components_enabled", ValueType: "bool", Default: "true", Description: "是否向模型注入交互式组件目录（qingchun-ai 卡片、对比表、图表）",
 		Validate: boolValue(), Apply: applyField(func(c *config.Config) *bool { return &c.UIComponentsEnabled }, toBool)},
 	{Namespace: "chat", Key: "context_compact_enabled", ValueType: "bool", Default: "false", Description: "是否允许上下文压缩功能",
 		Validate: boolValue(), Apply: applyField(func(c *config.Config) *bool { return &c.ContextCompactEnabled }, toBool)},

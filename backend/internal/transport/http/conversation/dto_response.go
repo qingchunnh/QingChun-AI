@@ -388,7 +388,7 @@ type PublicSharedConversationResponse struct {
 	DefaultMessagePublicIDs []string                      `json:"defaultMessagePublicIDs"`
 	Messages                []PublicSharedMessageResponse `json:"messages"`
 
-	// UIComponentsEnabled 为 false 时，分享页不渲染 deeix-ui 组件块。
+	// UIComponentsEnabled 为 false 时，分享页不渲染 qingchun-ai 组件块。
 	UIComponentsEnabled bool `json:"uiComponentsEnabled"`
 }
 

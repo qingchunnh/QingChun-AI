@@ -160,7 +160,7 @@ func TestResolveVisibleKeepsRequestOrderAndDropsHidden(t *testing.T) {
 
 func TestCatalogPromptListsEachComponentOnce(t *testing.T) {
 	prompt := CatalogPrompt(domainuicomponent.Builtin())
-	for _, want := range []string{"`deeix-ui`", "<nature>", "不是工具", `<component name="card-grid">`, `<component name="data-table">`, `<component name="chart">`, "<props>{"} {
+	for _, want := range []string{"`qingchun-ai`", "<nature>", "不是工具", `<component name="card-grid">`, `<component name="data-table">`, `<component name="chart">`, "<props>{"} {
 		if !strings.Contains(prompt, want) {
 			t.Fatalf("expected %q in prompt:\n%s", want, prompt)
 		}

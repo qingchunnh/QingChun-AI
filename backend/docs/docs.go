@@ -24710,7 +24710,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "uiComponentsEnabled": {
-                    "description": "UIComponentsEnabled 为 false 时，分享页不渲染 deeix-ui 组件块。",
+                    "description": "UIComponentsEnabled 为 false 时，分享页不渲染 qingchun-ai 组件块。",
                     "type": "boolean"
                 }
             }
