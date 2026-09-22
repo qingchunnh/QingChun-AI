@@ -34,6 +34,8 @@ import { useChatComposerSelection } from "@/features/chat/hooks/use-chat-compose
 import { useChatConversationActions } from "@/features/chat/hooks/use-chat-conversation-actions";
 import { useChatFileDrag } from "@/features/chat/hooks/use-chat-file-drag";
 import { useChatMCPTools } from "@/features/chat/hooks/use-chat-mcp-tools";
+import { useChatUIComponents } from "@/features/chat/hooks/use-chat-ui-components";
+import { UIBlockRegistryProvider } from "@/shared/components/markdown/ui-blocks";
 import { useChatMediaAttachmentActions } from "@/features/chat/hooks/use-chat-media-attachment-actions";
 import { useChatModelOptionState } from "@/features/chat/hooks/use-chat-model-option-state";
 import { useChatScreenshotPreview } from "@/features/chat/hooks/use-chat-screenshot-preview";
@@ -334,6 +336,13 @@ export function AppChatArea() {
     selectedToolIDs,
     setSelectedToolIDs,
   });
+  const {
+    uiComponents,
+    uiComponentsLoading,
+    defaultUIComponentIDs,
+    effectiveUIComponentIDs,
+    setSelectedUIComponents,
+  } = useChatUIComponents();
   const newConversationSelectionKey = `${newConversationRevision}:${newConversationProjectID || "unassigned"}`;
   const warnedUnavailableProjectModelRef = React.useRef("");
   React.useEffect(() => {
@@ -464,6 +473,7 @@ export function AppChatArea() {
     selectedToolIDs,
     selectedSkills,
     selectedKnowledgeBaseIDs,
+    uiComponentIDs: effectiveUIComponentIDs,
     htmlVisualPromptEnabled: htmlVisualPrompt.enabled,
     options: modelOptionPolicyDisabled ? EMPTY_CONVERSATION_OPTIONS : options,
     draft,
@@ -668,6 +678,7 @@ export function AppChatArea() {
     selectedToolIDs: temporarySelectedToolIDs,
     selectedSkillIDs: temporarySelectedSkillIDs,
     selectedKnowledgeBaseIDs,
+    uiComponentIDs: effectiveUIComponentIDs,
     htmlVisualPromptEnabled: htmlVisualPrompt.enabled,
     attachments,
     onDraftChange: setDraft,
@@ -728,6 +739,11 @@ export function AppChatArea() {
     selectedSkills,
     selectedKnowledgeBaseIDs,
     defaultToolIDs,
+    uiComponents: uiComponents ?? EMPTY_LIST,
+    uiComponentsLoading,
+    selectedUIComponentIDs: effectiveUIComponentIDs,
+    defaultUIComponentIDs,
+    onSelectedUIComponentsChange: setSelectedUIComponents,
     queuedMessages: temporaryMode ? EMPTY_LIST : queuedMessages,
     htmlVisualPromptEnabled: htmlVisualPrompt.enabled,
     maxSelectedTools: mcpMaxSelectedTools,
@@ -768,6 +784,7 @@ export function AppChatArea() {
     !isConversationLoading && !isConversationLoadFailed && !composerConversationMode && displayMessages.length === 0;
 
   return (
+    <UIBlockRegistryProvider components={uiComponents}>
     <div
       className="relative flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden md:overflow-visible"
       onDragEnter={onFileDragEnter}
@@ -972,5 +989,6 @@ export function AppChatArea() {
         </>
       ) : null}
     </div>
+    </UIBlockRegistryProvider>
   );
 }
